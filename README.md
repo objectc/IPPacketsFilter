@@ -1,5 +1,6 @@
 # IPPacketsFilter
 IPV4 CIDR Filter
+
 A filter rule set is a set of rules of the form:
 
 sourceIP, destIP, action 
