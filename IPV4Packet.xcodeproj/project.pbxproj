@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1791912220880753003DCC85 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1791912120880753003DCC85 /* main.cpp */; };
+		1791912A2088077F003DCC85 /* IPParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179191282088077F003DCC85 /* IPParser.cpp */; };
+		1791912D20881069003DCC85 /* Rule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1791912B20881069003DCC85 /* Rule.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,10 @@
 /* Begin PBXFileReference section */
 		1791911E20880753003DCC85 /* IPV4Packet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = IPV4Packet; sourceTree = BUILT_PRODUCTS_DIR; };
 		1791912120880753003DCC85 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		179191282088077F003DCC85 /* IPParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IPParser.cpp; sourceTree = "<group>"; };
+		179191292088077F003DCC85 /* IPParser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IPParser.hpp; sourceTree = "<group>"; };
+		1791912B20881069003DCC85 /* Rule.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Rule.cpp; sourceTree = "<group>"; };
+		1791912C20881069003DCC85 /* Rule.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Rule.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +64,10 @@
 			isa = PBXGroup;
 			children = (
 				1791912120880753003DCC85 /* main.cpp */,
+				1791912B20881069003DCC85 /* Rule.cpp */,
+				1791912C20881069003DCC85 /* Rule.hpp */,
+				179191282088077F003DCC85 /* IPParser.cpp */,
+				179191292088077F003DCC85 /* IPParser.hpp */,
 			);
 			path = IPV4Packet;
 			sourceTree = "<group>";
@@ -118,7 +128,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1791912D20881069003DCC85 /* Rule.cpp in Sources */,
 				1791912220880753003DCC85 /* main.cpp in Sources */,
+				1791912A2088077F003DCC85 /* IPParser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
