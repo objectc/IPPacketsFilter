@@ -1,6 +1,13 @@
 # IPPacketsFilter
 IPV4 CIDR Filter
 
+1. Merge naive code
+2. Class definition
+3. Simple Build Tree
+4. Keep the tree balanced
+
+
+
 A filter rule set is a set of rules of the form:
 
 sourceIP, destIP, action 
@@ -22,3 +29,5 @@ Getting Started:  Here is a list of things to complete first.
 3. Implement the naive algorithm that, for each incoming packet, looks in linear order for a matching rule and records the action.
 
 4.  For each (rules, packets) file pairs, record which packets are blocked and which are allowed.  Later we will share test files with other teams and make sure all teams agree on the outcome.
+
+
