@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include "IP.hpp"
 
 static unsigned int ip_to_int (const std::string &ip){
     /* The return value. */
@@ -54,15 +55,6 @@ static unsigned int ip_to_int (const std::string &ip){
     }
     return v;
 }
-class IP{
-public:
-    unsigned int intIP;
-    char cidr;
-    std::string ip;
-    IP(std::string const& ipStr);
-//    ~IP();
-};
-
 class Rule{
 public:
     IP src;
