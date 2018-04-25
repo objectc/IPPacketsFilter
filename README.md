@@ -1,8 +1,8 @@
 # IPPacketsFilter
 IPV4 CIDR Filter
 
-1. Merge naive code
-2. Class definition
+1. SourceTree & DestTree
+2. Remove IP from RangeNode, add startIP and endIP
 3. Simple Build Tree
 4. Keep the tree balanced
 
