@@ -35,7 +35,14 @@ Rule::Rule(IP const& src, IP const& dst, bool allow):src(src),dst(dst),allow(all
 bool Rule::isContain(unsigned int const& srcPacket, unsigned int const& dstPacket){
     int src1 = src.intIP>>src.cidr;
     int src2 = srcPacket>>src.cidr;
-    return src.intIP>>src.cidr == srcPacket>>src.cidr && dst.intIP>>src.cidr == dstPacket>>dst.cidr;
+    unsigned int ruleSrcShift = src.cidr==32?0:src.intIP>>src.cidr;
+    unsigned int packetSrcShift = src.cidr==32?0:srcPacket>>src.cidr;
+    unsigned int ruleDstShift = dst.cidr==32?0:dst.intIP>>dst.cidr;
+    unsigned int packetDstShift = dst.cidr==32?0:dstPacket>>dst.cidr;
+//    return src.intIP>>src.cidr == srcPacket>>src.cidr && dst.intIP>>dst.cidr == dstPacket>>dst.cidr;
+    bool res = (ruleSrcShift == packetSrcShift && ruleDstShift == packetDstShift);
+    return res;
+    
 }
 
 bool Rule::isAllow(unsigned int const& srcPacket, unsigned int const& dstPacket){
