@@ -124,7 +124,7 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
     {
         return newNode;
     }
-    else if(searchRoot->dstIP.IsContain(newIP) || newIP.IsContain(searchRoot->dstIP))
+    else if(newIP.IsContain(searchRoot->dstIP))
     {
         // cout<<"contain"<<endl;
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
@@ -133,7 +133,7 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
         if(left != nullptr)
         {
             // cout<<"Recursion Start!"<<endl<<endl;
-            Rule* leftRule = new Rule(rule.dst,*left, rule.allow);
+            Rule* leftRule = new Rule(*left, rule.src , rule.allow);
             root = InsertNode(*leftRule, root);
             //            cout<<"Recursion End!"<<endl;
             //            cout<<"Back To:";
@@ -142,7 +142,7 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
         if(right != nullptr)
         {
             // cout<<"Recursion Start!"<<endl<<endl;
-            Rule* rightRule = new Rule(rule.dst,*right, rule.allow);
+            Rule* rightRule = new Rule(*right,rule.dst , rule.allow);
             root =  InsertNode(*rightRule, root);
             //            cout<<"Recursion End!"<<endl;
             //            cout<<"Back To:";
@@ -257,7 +257,7 @@ void DstTree::Print(RangeNode *root)
     if(!root)
         return ;
     if(root){
-        cout<<"["<< root->dstIP.intIP<<","<<root->dstIP.IPEnd << "]   height:" << root->high << endl;
+        cout<<"["<< root->dstIP.intIP<<","<<root->dstIP.IPEnd << "] Action: "<<root->action<<"   height:" << root->high << endl;
         if(root->left != nullptr)
         {
             cout<<"left:"<<endl;

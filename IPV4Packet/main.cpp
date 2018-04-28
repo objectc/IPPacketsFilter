@@ -19,6 +19,7 @@ using namespace std;
 
 static void preorder_traversal(RangeNode *root);
 int main(int argc, const char * argv[]) {
+    cout<<"true is "<<true<<endl;
     // insert code here...
     cout << "Hello, World!\n";
     fstream f_stream;
@@ -34,18 +35,15 @@ int main(int argc, const char * argv[]) {
 //        cout<<"DO:-------->"<<endl;
         tree.root = tree.InsertNode(rule, tree.root);
 //        cout<<endl<<"[[[[-----tree--------]]]]"<<endl;
-//        preorder_traversal(tree.root);
+        tree.Print(tree.root);
         
-//        cout<<endl<<"---loop---"<<loopTime<<endl<<endl;
+        cout<<endl<<"---loop---"<<loopTime<<endl<<endl;
         loopTime++;
     }
 //    cout<<"Main----->"<<tree.root<<endl;
     f_stream.close();
 //    cout<<loopTime;
     tree.Print(tree.root);
-    SrcTree* cpy = tree.CpySelf();
-    cout<<"!!!!!!!!!!!!!"<<endl;
-    cpy->Print(cpy->root);
 }
 
 #endif

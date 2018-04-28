@@ -172,6 +172,8 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
         IPRange::Split(newIP, searchRoot->srcIP, left, mid, right);
         searchRoot->srcIP = *mid;
+        Rule midR = Rule(node->dstIP, *mid, node->action);
+        searchRoot->childTree->root = searchRoot->childTree->InsertNode(midR, searchRoot->childTree->root);
         if(left != nullptr)
         {
            // cout<<"Recursion Start!"<<endl<<endl;
@@ -301,7 +303,7 @@ void SrcTree::Print(RangeNode *root)
     if(root){
         cout<<"["<< root->srcIP.intIP<<","<<root->srcIP.IPEnd << "]   height:" << root->high << endl;
         cout<<"----------SUBTREE----------"<<endl;
-        //root->childTree->Print(root->childTree->root);
+        root->childTree->Print(root->childTree->root);
         cout<<"----------SUBTREE END----------"<<endl;
         if(root->left != nullptr)
         {

@@ -37,7 +37,7 @@ RangeNode:: RangeNode(Rule rule, int height)
 }
 RangeNode* RangeNode:: CpyNode()
 {
-    RangeNode* tmp = new RangeNode(srcIP, dstIP, action, high);
+    RangeNode* tmp = new RangeNode(srcIP, dstIP, action);
     tmp->childTree = childTree->CpySelf();
     return tmp;
 }
