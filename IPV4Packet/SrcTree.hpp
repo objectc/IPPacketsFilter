@@ -23,7 +23,13 @@ public:
     SrcTree();
     void Insert(const Rule rule);
     RangeNode* root;
-    
+    RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
+    RangeNode* InsertNode(RangeNode* node ,RangeNode* searchRoot);
+    void Print(RangeNode *root);
+    SrcTree* CpySelf();
+private:
+    RangeNode* newNode;
+    void CpyNode(RangeNode* node, RangeNode*& newN);
     RangeNode* SearchPos(IPRange ip, RangeNode* searchRoot);
     //single left rotate
     RangeNode *single_rotate_left(RangeNode *root);
@@ -37,8 +43,5 @@ public:
     int hight(RangeNode * root);
     //get the max value of child tree's height.
     int max(int l, int r);
-    RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
-private:
-    RangeNode* newNode;
 };
 #endif /* RangeTree_hpp */

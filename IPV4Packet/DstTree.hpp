@@ -20,9 +20,16 @@ using namespace std;
 class DstTree
 {
 public:
+    RangeNode* root;
     DstTree();
     void Insert(const Rule rule);
-    RangeNode* root;
+    RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
+    void Print(RangeNode *root);
+    DstTree* CpySelf();
+private:
+    RangeNode* newNode;
+    void CpyNode(RangeNode* node, RangeNode*& newN);
+    
     RangeNode* SearchPos(IPRange ip, RangeNode* searchRoot);
     //single left rotate
     RangeNode *single_rotate_left(RangeNode *root);
@@ -36,9 +43,5 @@ public:
     int hight(RangeNode * root);
     //get the max value of child tree's height.
     int max(int l, int r);
-    RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
-    
-private:
-    RangeNode* newNode;
 };
 #endif /* DstTree_hpp */

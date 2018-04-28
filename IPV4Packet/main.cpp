@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     cout << "Hello, World!\n";
     fstream f_stream;
     string s;
-    f_stream.open("./rules.txt", ios::in);
+    f_stream.open("./IPV4Packet/rules.txt", ios::in);
     SrcTree tree = SrcTree();
     int loopTime = 0;
     while (!f_stream.eof()) {
@@ -42,28 +42,10 @@ int main(int argc, const char * argv[]) {
 //    cout<<"Main----->"<<tree.root<<endl;
     f_stream.close();
 //    cout<<loopTime;
-    preorder_traversal(tree.root);
-}
-
-static void preorder_traversal(RangeNode *root)
-{
-    if(!root)
-        return ;
-    if(root){
-        cout<<"["<< root->ip.intIP<<","<<root->ip.IPEnd << "]   height:" << root->high << endl;
-        if(root->left != nullptr)
-        {
-            cout<<"left:"<<endl;
-            preorder_traversal(root->left);
-            cout<<"back to"<<"["<< root->ip.intIP<<","<<root->ip.IPEnd << "]"<<endl;
-        }
-        if(root->right != nullptr)
-        {
-            cout<<"right:"<<endl;
-            preorder_traversal(root->right);
-            cout<<"back to"<<"["<< root->ip.intIP<<","<<root->ip.IPEnd << "]"<<endl;
-        }
-    }
+    tree.Print(tree.root);
+    SrcTree* cpy = tree.CpySelf();
+    cout<<"!!!!!!!!!!!!!"<<endl;
+    cpy->Print(cpy->root);
 }
 
 #endif

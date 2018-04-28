@@ -7,10 +7,13 @@
 //
 
 #include "RangeNode.hpp"
+#include "DstTree.hpp"
 //#include "Rule.hpp"
-RangeNode:: RangeNode(IPRange ip, int height)
+RangeNode:: RangeNode(IPRange srcIP, IPRange dstIP, bool action, int height)
 {
-    this->ip = ip;
+    this->srcIP = srcIP;
+    this->dstIP = dstIP;
+    this->action = action;
     high = height;
     left = nullptr;
     right = nullptr;
@@ -21,4 +24,20 @@ RangeNode::RangeNode()
     left = nullptr;
     right = nullptr;
     childTree = nullptr;
+}
+RangeNode:: RangeNode(Rule rule, int height)
+{
+    srcIP = rule.src;
+    dstIP = rule.dst;
+    action = rule.allow;
+    high = height;
+    left = nullptr;
+    right = nullptr;
+    childTree = nullptr;
+}
+RangeNode* RangeNode:: CpyNode()
+{
+    RangeNode* tmp = new RangeNode(srcIP, dstIP, action, high);
+    tmp->childTree = childTree->CpySelf();
+    return tmp;
 }
