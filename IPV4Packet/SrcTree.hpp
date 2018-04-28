@@ -22,6 +22,7 @@ class SrcTree
 public:
     SrcTree();
     void Insert(const Rule rule);
+    bool SearchPos(int src, int dst, RangeNode* searchRoot);
     RangeNode* root;
     RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
     RangeNode* InsertNode(RangeNode* node ,RangeNode* searchRoot);
@@ -30,7 +31,6 @@ public:
 private:
     RangeNode* newNode;
     void CpyNode(RangeNode* node, RangeNode*& newN);
-    RangeNode* SearchPos(IPRange ip, RangeNode* searchRoot);
     //single left rotate
     RangeNode *single_rotate_left(RangeNode *root);
     //single right rotate

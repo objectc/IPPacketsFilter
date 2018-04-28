@@ -13,49 +13,33 @@ DstTree::DstTree()
 {
     root = nullptr;
 }
-
-RangeNode* DstTree::SearchPos(IPRange ip, RangeNode* searchRoot)
+bool DstTree::SearchPos(int dst, RangeNode* searchRoot)
 {
-    if(searchRoot == nullptr)
-    {
-        //        cout<<"ROOT FIND!"<<endl;
-        return searchRoot;
-    }
-    else if(searchRoot->dstIP.IsContain(ip))
-    {
-        //        cout<<"be Contained"<<endl;
-        return searchRoot;
-    }
-    else if(ip.IsContain(searchRoot->dstIP))
-    {
-        //        cout<<"Countains"<<endl;
-        return searchRoot;
-    }
-    else if(ip.intIP > searchRoot->dstIP.intIP)
+    if(dst > searchRoot->dstIP.IPEnd)
     {
         if(searchRoot->right == nullptr)
         {
-            //            cout<<"find! on the right"<<endl;
-            return searchRoot;
+            throw "out!!";
         }
         else
         {
-            //            cout<<"right"<<endl;
-            return SearchPos(ip, searchRoot->right);
+            return SearchPos(dst , searchRoot->right);
+        }
+    }
+    else if(dst < searchRoot->dstIP.intIP)
+    {
+        if(searchRoot->left == nullptr)
+        {
+            throw "out!!";
+        }
+        else
+        {
+            return SearchPos(dst, searchRoot->left);
         }
     }
     else
     {
-        if(searchRoot->left == nullptr)
-        {
-            //            cout<<"find! on the left"<<endl;
-            return searchRoot;
-        }
-        else
-        {
-            //            cout<<"left"<<endl;
-            return SearchPos(ip, searchRoot->left);
-        }
+        return searchRoot->action;
     }
 }
 int DstTree::hight(RangeNode * root)

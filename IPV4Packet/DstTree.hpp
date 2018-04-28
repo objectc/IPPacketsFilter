@@ -24,13 +24,12 @@ public:
     DstTree();
     void Insert(const Rule rule);
     RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
+    bool SearchPos(int dst, RangeNode* searchRoot);
     void Print(RangeNode *root);
     DstTree* CpySelf();
 private:
     RangeNode* newNode;
     void CpyNode(RangeNode* node, RangeNode*& newN);
-    
-    RangeNode* SearchPos(IPRange ip, RangeNode* searchRoot);
     //single left rotate
     RangeNode *single_rotate_left(RangeNode *root);
     //single right rotate

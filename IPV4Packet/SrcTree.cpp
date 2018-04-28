@@ -14,48 +14,33 @@ SrcTree::SrcTree()
     root = nullptr;
 }
 
-RangeNode* SrcTree::SearchPos(IPRange ip, RangeNode* searchRoot)
+bool SrcTree::SearchPos(int src, int dst, RangeNode* searchRoot)
 {
-    if(searchRoot == nullptr)
-    {
-//        cout<<"ROOT FIND!"<<endl;
-        return searchRoot;
-    }
-    else if(searchRoot->srcIP.IsContain(ip))
-    {
-//        cout<<"be Contained"<<endl;
-        return searchRoot;
-    }
-    else if(ip.IsContain(searchRoot->srcIP))
-    {
-//        cout<<"Countains"<<endl;
-        return searchRoot;
-    }
-    else if(ip.intIP > searchRoot->srcIP.intIP)
+    if(src > searchRoot->srcIP.IPEnd)
     {
         if(searchRoot->right == nullptr)
         {
-//            cout<<"find! on the right"<<endl;
-            return searchRoot;
+            throw "out!!";
         }
         else
         {
-//            cout<<"right"<<endl;
-            return SearchPos(ip, searchRoot->right);
+            return SearchPos(src , dst , searchRoot->right);
+        }
+    }
+    else if(src < searchRoot->srcIP.intIP)
+    {
+        if(searchRoot->left == nullptr)
+        {
+            throw "out!!";
+        }
+        else
+        {
+            return SearchPos(src, dst, searchRoot->left);
         }
     }
     else
     {
-        if(searchRoot->left == nullptr)
-        {
-//            cout<<"find! on the left"<<endl;
-            return searchRoot;
-        }
-        else
-        {
-//            cout<<"left"<<endl;
-            return SearchPos(ip, searchRoot->left);
-        }
+        return  searchRoot->childTree->SearchPos(dst, searchRoot->childTree->root);
     }
 }
 int SrcTree::hight(RangeNode * root)
@@ -143,6 +128,7 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
         IPRange::Split(newIP, searchRoot->srcIP, left, mid, right);
         searchRoot->srcIP = *mid;
         Rule midR = Rule(node->dstIP, *mid, node->action);
+        
         searchRoot->childTree->root = searchRoot->childTree->InsertNode(midR, searchRoot->childTree->root);
         if(left != nullptr)
         {
@@ -160,6 +146,7 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
             RangeNode* rightNode = searchRoot->CpyNode();
             rightNode->srcIP = *right;
             root = InsertNode(rightNode, root);
+            
             //            cout<<"Recursion End!"<<endl;
             //            cout<<"Back To:";
             //  searchRoot->ip.Print();
