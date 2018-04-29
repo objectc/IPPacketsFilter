@@ -24,8 +24,10 @@ public:
     void Insert(const Rule rule);
     bool SearchPos(int src, int dst, RangeNode* searchRoot);
     RangeNode* root;
-    RangeNode* InsertNode( Rule rule,RangeNode* searchRoot);
+    RangeNode* InsertNode( Rule rule,RangeNode*& searchRoot);
     RangeNode* InsertNode(RangeNode* node ,RangeNode* searchRoot);
+    void InsertSubNode(RangeNode* node ,RangeNode*& searchRoot);
+    bool Search1Dim(int src, RangeNode* searchRoot);
     void Print(RangeNode *root);
     SrcTree* CpySelf();
 private:

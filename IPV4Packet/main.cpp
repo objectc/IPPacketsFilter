@@ -69,7 +69,7 @@ void verifyData(SrcTree* tree){
     ifstream dataFile;
     dataFile.open("./Res/packetfile.txt");
     ofstream resultFile;
-    resultFile.open ("./Res/treeResult.txt");
+    resultFile.open ("./Res/result_1D.txt");
     if (dataFile.is_open()) {
         while(getline(dataFile,testCaseItem)) {
             istringstream ss(testCaseItem);
@@ -88,7 +88,7 @@ void verifyData(SrcTree* tree){
                 }
                 unsigned int srcPacketInt = ip_to_int(srcStr);
                 unsigned int dstPacketInt = ip_to_int(dstStr);
-                if (tree->SearchPos(srcPacketInt, dstPacketInt, tree->root)) {
+                if (tree->Search1Dim(srcPacketInt, tree->root)) {
                     resultFile << "ALLOW\n";
                 }else{
                     resultFile << "DENY\n";
@@ -115,7 +115,7 @@ int main(int argc, const char * argv[]) {
         Rule rule(s);
 //        cout<<"--------------------------"<<endl;
 //        cout<<"DO:-------->"<<endl;
-        tree.root = tree.InsertNode(rule, tree.root);
+        tree.InsertNode(rule, tree.root);
 //        cout<<endl<<"[[[[-----tree--------]]]]"<<endl;
 //        tree.Print(tree.root);
         
