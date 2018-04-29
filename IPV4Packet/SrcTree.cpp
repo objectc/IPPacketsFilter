@@ -281,7 +281,39 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
     }
     else
     {
-        cout<<"bengle"<<endl;
+//        cout<<"bengle"<<endl;
+        // cout<<"contain"<<endl;
+        IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
+        IPRange::Split(newIP, searchRoot->srcIP, left, mid, right);
+        searchRoot->srcIP = *mid;
+        Rule midR = Rule(node->dstIP, *mid, node->action);
+        
+        searchRoot->childTree->root = searchRoot->childTree->InsertNode(midR, searchRoot->childTree->root);
+        if(left != nullptr)
+        {
+            // cout<<"Recursion Start!"<<endl<<endl;
+            RangeNode* leftNode;
+            if (searchRoot->srcIP.IsContain(*left)) {
+                leftNode = searchRoot->CpyNode();
+                leftNode->srcIP = *left;
+            }else{
+                leftNode = new RangeNode(*left, node->dstIP, node->action);
+            }
+            root = InsertNode(leftNode, root);
+        }
+        if(right != nullptr)
+        {
+            // cout<<"Recursion Start!"<<endl<<endl;
+            RangeNode* rightNode;
+            if (searchRoot->srcIP.IsContain(*right)) {
+                rightNode = searchRoot->CpyNode();
+                rightNode->srcIP = *right;
+            }else{
+                rightNode = new RangeNode(*right, node->dstIP, node->action);
+            }
+            root = InsertNode(rightNode, root);
+        }
+        return root;
         
     }
     

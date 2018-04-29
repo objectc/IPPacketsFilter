@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <math.h>
+#include <vector>
 
 using namespace std;
 
@@ -31,6 +32,23 @@ public:
     void Print();
     static void Split(IPRange a, IPRange b, IPRange*& left, IPRange*& mid, IPRange*& right)
     {
+        std::vector<unsigned int> ipVec;
+        ipVec.push_back(a.intIP);
+        ipVec.push_back(a.IPEnd);
+        ipVec.push_back(b.intIP);
+        ipVec.push_back(b.IPEnd);
+        std::sort(ipVec.begin(), ipVec.end());
+        if (!(ipVec[1]-ipVec[0]<1)) {
+            left = new IPRange(ipVec[0], ipVec[1]-1);
+        }
+        mid = new IPRange(ipVec[1], ipVec[2]);
+        if (!(ipVec[3]-ipVec[2]<1)) {
+            right = new IPRange(ipVec[2]+1, ipVec[3]);
+        }
+        return;
+        
+        
+        //useless
         if(!a.IsContain(b) && !b.IsContain(a))
         {
             throw "a and b is not a contain relationship";

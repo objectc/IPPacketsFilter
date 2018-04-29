@@ -232,6 +232,38 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
             
         }
     }
+    else
+    {
+        //        cout<<"bengle"<<endl;
+        // cout<<"contain"<<endl;
+        IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
+        IPRange::Split(newIP, searchRoot->dstIP, left, mid, right);
+        searchRoot->dstIP = *mid;
+        if(left != nullptr)
+        {
+            // cout<<"Recursion Start!"<<endl<<endl;
+            
+            if (searchRoot->dstIP.IsContain(*left)) {
+                Rule leftRule = Rule(*left, searchRoot->srcIP, searchRoot->action);
+                root = InsertNode(leftRule, root);
+            }else{
+                Rule leftRule = Rule(*left,rule.src, rule.allow);
+                root = InsertNode(leftRule, root);
+            }
+        }
+        if(right != nullptr)
+        {
+            if (searchRoot->dstIP.IsContain(*right)) {
+                Rule rightRule = Rule(*right, searchRoot->srcIP, searchRoot->action);
+                root = InsertNode(rightRule, root);
+            }else{
+                Rule rightRule = Rule(*right,rule.src, rule.allow);
+                root = InsertNode(rightRule, root);
+            }
+        }
+        return root;
+        
+    }
     
     searchRoot->high = max(hight(searchRoot->left), hight(searchRoot->right)) + 1;
     return searchRoot;
