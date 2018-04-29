@@ -279,6 +279,11 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
             
         }
     }
+    else
+    {
+        cout<<"bengle"<<endl;
+        
+    }
     
     searchRoot->high = max(hight(searchRoot->left), hight(searchRoot->right)) + 1;
     return searchRoot;

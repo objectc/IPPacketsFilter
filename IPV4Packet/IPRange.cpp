@@ -59,7 +59,10 @@ void IPRange::TransformIP()
     //cout<<"min"<<minIP<<endl;
     unsigned int _m = pow(2, k) - 1;
     IPEnd =intIP | _m;
-    //cout<<"max"<<maxIP<<endl;
+    if (k==32) {
+        intIP = 0;
+    }else
+        intIP = intIP >> k << k;
 }
 bool IPRange::IsContain(IPRange b)
 {
