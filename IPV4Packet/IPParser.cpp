@@ -44,7 +44,7 @@ void IPParser::verifyData(){
     ifstream dataFile;
     dataFile.open("packetfile.txt");
     ofstream resultFile;
-    resultFile.open ("result11111a.txt");
+    resultFile.open ("result_1D_naive.txt");
     if (dataFile.is_open()) {
         while(getline(dataFile,testCaseItem)) {
             istringstream ss(testCaseItem);
@@ -73,6 +73,7 @@ void IPParser::verifyData(){
                             founded = true;
                             break;
                         }else{
+//                            not allow
                             break;
                         }
                     }
