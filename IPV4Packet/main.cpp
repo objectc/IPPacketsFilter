@@ -13,13 +13,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include "SrcTree.hpp"
-#include "RangeNode.hpp"
 
 
 using namespace std;
-
-static void preorder_traversal(RangeNode *root);
 
 unsigned int ip_to_int (const std::string &ip){
     /* The return value. */
@@ -63,7 +59,7 @@ unsigned int ip_to_int (const std::string &ip){
     return v;
 }
 
-
+/*
 void verifyData(SrcTree* tree){
     string testCaseItem;
     ifstream dataFile;
@@ -99,6 +95,7 @@ void verifyData(SrcTree* tree){
     dataFile.close();
     resultFile.close();
 }
+*/
 
 int main(int argc, const char * argv[]) {
     cout<<"true is "<<true<<endl;
@@ -107,15 +104,15 @@ int main(int argc, const char * argv[]) {
     fstream f_stream;
     string s;
     f_stream.open("./Res/ruleset 2.txt", ios::in);
-    SrcTree tree = SrcTree();
+//    SrcTree tree = SrcTree();
     int loopTime = 0;
     while (!f_stream.eof()) {
         //cout<<"IP info"<<endl;
         f_stream>>s;
-        Rule rule(s);
+//        Rule rule(s);
 //        cout<<"--------------------------"<<endl;
 //        cout<<"DO:-------->"<<endl;
-        tree.InsertNode(rule, tree.root);
+//        tree.InsertNode(rule, tree.root);
 //        cout<<endl<<"[[[[-----tree--------]]]]"<<endl;
 //        tree.Print(tree.root);
         
@@ -126,7 +123,7 @@ int main(int argc, const char * argv[]) {
     f_stream.close();
 //    cout<<loopTime;
 //    tree.Print(tree.root);
-    verifyData(&tree);
+//    verifyData(&tree);
 }
 
 #endif

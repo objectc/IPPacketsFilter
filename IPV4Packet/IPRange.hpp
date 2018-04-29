@@ -21,22 +21,19 @@ class IPRange
 {
 public:
     // minIP <= ip < maxIP
-    unsigned int intIP;
-    unsigned int IPEnd;
+    unsigned int start;
+    unsigned int end;
     
-    IPRange();
-    IPRange(unsigned int minIP, unsigned int maxIP);
-    IPRange(int a, int b, int c, int d, int k);
-    IPRange(string a,string b,string c,string d,string k);
-    bool IsContain(IPRange b);
-    void Print();
+    IPRange(const unsigned int start, const unsigned int end);
+    IPRange(const string &ipStr, const char &cidr);
+    bool IsContain(IPRange b) const;
     static void Split(IPRange a, IPRange b, IPRange*& left, IPRange*& mid, IPRange*& right)
     {
         std::vector<unsigned int> ipVec;
-        ipVec.push_back(a.intIP);
-        ipVec.push_back(a.IPEnd);
-        ipVec.push_back(b.intIP);
-        ipVec.push_back(b.IPEnd);
+        ipVec.push_back(a.start);
+        ipVec.push_back(a.end);
+        ipVec.push_back(b.start);
+        ipVec.push_back(b.end);
         std::sort(ipVec.begin(), ipVec.end());
         if (!(ipVec[1]-ipVec[0]<1)) {
             left = new IPRange(ipVec[0], ipVec[1]-1);
@@ -57,48 +54,48 @@ public:
 //        cout<<"----Start SPLIT:"<<endl;
 //        a.Print();
 //        b.Print();
-        if(a.intIP > b.intIP)
+        if(a.start > b.start)
         {
-            IPRange *l = new IPRange(b.intIP, a.intIP - 1);
+            IPRange *l = new IPRange(b.start, a.start - 1);
             left = l;
 //            cout<< "left:";
 //            l->Print();
-            if(a.IPEnd < b.IPEnd)
+            if(a.end < b.end)
             {
-                IPRange* r = new IPRange(a.IPEnd + 1, b.IPEnd);
+                IPRange* r = new IPRange(a.end + 1, b.end);
                 right = r;
 //                cout<<"rignt: ";
 //                r->Print();
             }
 //            cout<<"middle:";
-            IPRange* m = new IPRange(a.intIP, a.IPEnd);
+            IPRange* m = new IPRange(a.start, a.end);
             mid = m;
 //            mid->Print();
         }
-        else if(a.intIP < b.intIP)
+        else if(a.start < b.start)
         {
-            IPRange* l = new IPRange(a.intIP, b.intIP - 1);
+            IPRange* l = new IPRange(a.start, b.start - 1);
             left = l;
 //            cout<< "left:";
 //            l->Print();
-            if(b.IPEnd < a.IPEnd)
+            if(b.end < a.end)
             {
-                IPRange* r = new IPRange(b.IPEnd + 1, a.IPEnd);
+                IPRange* r = new IPRange(b.end + 1, a.end);
                 right = r;
 //                cout<<"rignt:";
 //                r->Print();
             }
 //            cout<<"middle:";
-            IPRange* m = new IPRange(b.intIP, b.IPEnd);
+            IPRange* m = new IPRange(b.start, b.end);
             mid = m;
 //            mid->Print();
         }
         else
         {
-            if(a.IPEnd > b.IPEnd)
+            if(a.end > b.end)
             {
-                IPRange* r = new IPRange(b.IPEnd + 1, a.IPEnd);
-                IPRange* m = new IPRange(a.intIP, b.IPEnd);
+                IPRange* r = new IPRange(b.end + 1, a.end);
+                IPRange* m = new IPRange(a.start, b.end);
                 right = r;
                 mid = m;
 //                cout<<"rignt: ";
@@ -106,10 +103,10 @@ public:
 //                cout<<"middle: ";
 //                mid->Print();
             }
-            else if(b.IPEnd > a.IPEnd)
+            else if(b.end > a.end)
             {
-                IPRange* r = new IPRange(a.IPEnd + 1, b.IPEnd);
-                IPRange* m = new IPRange(b.intIP, a.IPEnd);
+                IPRange* r = new IPRange(a.end + 1, b.end);
+                IPRange* m = new IPRange(b.start, a.end);
                 right = r;
                 mid = m;
 //               cout<<"rignt: ";
@@ -120,7 +117,7 @@ public:
             }
             else
             {
-                IPRange* m = new IPRange(a.intIP, a.IPEnd);
+                IPRange* m = new IPRange(a.start, a.end);
                 mid = m;
 //                cout<<"middle: ";
 //                m->Print();

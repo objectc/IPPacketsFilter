@@ -10,27 +10,57 @@
 #define IPRangeNode_hpp
 
 #include <stdio.h>
+
+#include "IPRange.hpp"
+
 class DestNode;
 class SourceNode;
 class IPRangeNode{
 public:
+    IPRangeNode(unsigned int start, unsigned int end):start(start),end(end),range(start, end){};
+    IPRangeNode(const IPRange& range):range(range){};
+    
+//    virtual void InsertNode(unsigned int start, unsigned int end) = 0;
+//    virtual void InsertNode(IPRange &range) = 0;
+    virtual IPRangeNode *Search(unsigned packetIP) = 0;
+    
     unsigned int start;
     unsigned int end;
-    IPRangeNode *left = nullptr;
-    IPRangeNode *right = nullptr;
-    virtual void InsertNode(unsigned int start, unsigned int end ,IPRangeNode*& currentNode) = 0;
-    virtual IPRangeNode *deepcopy() = 0;
-    virtual IPRangeNode *Search(unsigned packetIP, IPRangeNode* currentNode = nullptr) = 0;
+    IPRange range;
+//    IPRangeNode *left = nullptr;
+//    IPRangeNode *right = nullptr;
 };
 
 class SourceNode:public IPRangeNode{
-    bool IsPacketAllow(unsigned int packetSRC, unsigned int packetDST, IPRangeNode * currentNode);
-    SourceNode *Search(unsigned packetIP, IPRangeNode* currentNode = nullptr);
+    
+    SourceNode(unsigned int start, unsigned int end):IPRangeNode(start, end){};
+    SourceNode(const IPRange& range):IPRangeNode(range){};
+    
+//    void InsertNode(unsigned int start, unsigned int end);
+    void InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
+    void InsertNode(const IPRange &rangeSRC, const DestNode *dst);
+    
+    bool IsPacketAllow(unsigned int packetSRC, unsigned int packetDST);
+    SourceNode *Search(unsigned packetIP);
+    
+    SourceNode *left = nullptr;
+    SourceNode *right = nullptr;
     DestNode *dstChild;
 };
 class DestNode:public IPRangeNode{
 public:
+    static DestNode* deepcopy(const DestNode * dstNode);
+    
+    DestNode(const IPRange &dstRange):IPRangeNode(dstRange), isAllow(false){};
+    DestNode(const IPRange &dstRange, bool action):IPRangeNode(dstRange), isAllow(action){};
+    
+    void InsertNode(const IPRange &rangeDST, bool action);
+    
+    DestNode *Search(unsigned int packetIP);
+    
+    DestNode *left = nullptr;
+    DestNode *right = nullptr;
+    
     bool isAllow;
-    DestNode *Search(unsigned int packetIP, IPRangeNode* currentNode = nullptr);
 };
 #endif /* IPRangeNode_hpp */

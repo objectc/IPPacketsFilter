@@ -7,66 +7,42 @@
 //
 
 #include "IPRange.hpp"
-IPRange::IPRange()
+
+IPRange::IPRange(const unsigned int start, const unsigned int end):start(start),end(end)
 {
-    a = 0;
-    b = 0;
-    c = 0;
-    d = 0;
-    k = 0;
-    IPEnd = 0;
-    intIP = 0;
+    if(start > end)
+    {
+        throw "start > end";
+    }
 }
-IPRange::IPRange(unsigned int min, unsigned int max)
+
+
+IPRange::IPRange(const string &ipStr, const char &cidr)
 {
-    if(min > max)
-        {
-//            cout<<"min:"<<min<<" , ";
-//            cout<<"max:"<<max<<","<<endl;
-            throw "min > max";
-        }
-    this->IPEnd = max;
-    this->intIP = min;
+    unsigned int ip = atoi(ipStr.c_str());
+    if (cidr==32) {
+        start = 0;
+    }else
+        start = ip >> cidr << cidr;
+    
+    unsigned int _m = pow(2, cidr) - 1;
+    end =start | _m;
 }
-IPRange::IPRange(int a, int b, int c, int d, int k)
-{
-    this->a = a;
-    this->b = b;
-    this->c = c;
-    this->d = d;
-    this->k = k;
-    TransformIP();
-}
-IPRange::IPRange(std::string a,std::string b,std::string c,std::string d,std::string k)
-{
-    this->a = atoi(a.c_str());
-    this->b = atoi(b.c_str());
-    this->c = atoi(c.c_str());
-    this->d = atoi(d.c_str());
-    this->k = atoi(k.c_str());
-    TransformIP();
-}
-void IPRange::Print()
-{
-    if(this != nullptr)
-        cout<<intIP<<" to "<< IPEnd<<endl;
-    else
-    cout<<"null"<<endl;
-}
+
 void IPRange::TransformIP()
 {
-    intIP = a * pow(256, 3) + b * pow(256, 2) + c * 256 + d;
+    start = a * pow(256, 3) + b * pow(256, 2) + c * 256 + d;
     //cout<<"min"<<minIP<<endl;
     unsigned int _m = pow(2, k) - 1;
-    IPEnd =intIP | _m;
+    end =start | _m;
     if (k==32) {
-        intIP = 0;
+        start = 0;
     }else
-        intIP = intIP >> k << k;
+        start = start >> k << k;
 }
-bool IPRange::IsContain(IPRange b)
+bool IPRange::IsContain(IPRange b) const
 {
-    if(IPEnd >= b.IPEnd && intIP <= b.intIP)
+    if(end >= b.end && start <= b.start)
         return true;
     else
         return  false;

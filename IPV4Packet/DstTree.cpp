@@ -15,7 +15,7 @@ DstTree::DstTree()
 }
 bool DstTree::SearchPos(int dst, RangeNode* searchRoot)
 {
-    if(dst > searchRoot->dstIP.IPEnd)
+    if(dst > searchRoot->dstIP.end)
     {
         if(searchRoot->right == nullptr)
         {
@@ -26,7 +26,7 @@ bool DstTree::SearchPos(int dst, RangeNode* searchRoot)
             return SearchPos(dst , searchRoot->right);
         }
     }
-    else if(dst < searchRoot->dstIP.intIP)
+    else if(dst < searchRoot->dstIP.start)
     {
         if(searchRoot->left == nullptr)
         {
@@ -101,7 +101,7 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
     //    rule.Print();
     IPRange newIP;
     newIP = rule.dst;
-//    cout<<"Insert start "<<newIP.intIP<<"-----end "<<newIP.IPEnd<<endl;
+//    cout<<"Insert start "<<newIP.start<<"-----end "<<newIP.end<<endl;
     newNode = new RangeNode(rule);
     newNode->action = rule.allow;
     
@@ -138,31 +138,31 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
         }
         return root;
     }
-    //    else if(rule.src.intIP == searchRoot->ip.IPEnd)
+    //    else if(rule.src.start == searchRoot->ip.end)
     //    {
     //       // cout<<"connect"<<endl;
-    //        IPRange left = IPRange(searchRoot->ip.intIP, searchRoot->ip.IPEnd - 1);
-    //        IPRange mid = IPRange(searchRoot->ip.IPEnd, rule.src.intIP); // signle point
-    //        IPRange right = IPRange(rule.src.intIP + 1, rule.src.IPEnd);
+    //        IPRange left = IPRange(searchRoot->ip.start, searchRoot->ip.end - 1);
+    //        IPRange mid = IPRange(searchRoot->ip.end, rule.src.start); // signle point
+    //        IPRange right = IPRange(rule.src.start + 1, rule.src.end);
     //        searchRoot->ip = mid;
     //        Rule* leftRule = new Rule(rule.dst,left, rule.allow);
     //        searchRoot = InsertNode(*leftRule, searchRoot);
     //        Rule* rightRule = new Rule(rule.dst,right, rule.allow);
     //        searchRoot =  InsertNode(*rightRule, searchRoot);
     //    }
-    //    else if(rule.src.IPEnd == searchRoot->ip.intIP)
+    //    else if(rule.src.end == searchRoot->ip.start)
     //    {
     //       // cout<<"connect"<<endl;
-    //        IPRange left = IPRange(rule.src.intIP, rule.src.IPEnd - 1);
-    //        IPRange mid = IPRange(searchRoot->ip.IPEnd, rule.src.intIP); // signle point
-    //        IPRange right = IPRange(searchRoot->ip.intIP + 1, searchRoot->ip.IPEnd);
+    //        IPRange left = IPRange(rule.src.start, rule.src.end - 1);
+    //        IPRange mid = IPRange(searchRoot->ip.end, rule.src.start); // signle point
+    //        IPRange right = IPRange(searchRoot->ip.start + 1, searchRoot->ip.end);
     //        searchRoot->ip = mid;
     //        Rule* leftRule = new Rule(rule.dst,left, rule.allow);
     //        searchRoot = InsertNode(*leftRule, searchRoot);
     //        Rule* rightRule = new Rule(rule.dst,right, rule.allow);
     //        searchRoot =  InsertNode(*rightRule, searchRoot);
     //    }
-    else if(newIP.intIP > searchRoot->dstIP.IPEnd)
+    else if(newIP.start > searchRoot->dstIP.end)
     {
         // cout<<"right"<<endl<<endl;
         RangeNode *tmp;
@@ -179,11 +179,11 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
             //            {
             //                return searchRoot;
             //            }
-            if(searchRoot->right->dstIP.IPEnd < newNode->dstIP.intIP)
+            if(searchRoot->right->dstIP.end < newNode->dstIP.start)
             {
                 searchRoot = single_rotate_right(searchRoot);
             }
-            else if (searchRoot->right->dstIP.intIP > newNode->dstIP.IPEnd)
+            else if (searchRoot->right->dstIP.start > newNode->dstIP.end)
             {
                 searchRoot = double_rotate_right(searchRoot);
             }
@@ -196,7 +196,7 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
             //            cout<<"subtree end //////"<<endl<<endl;
         }
     }
-    else if(newIP.IPEnd < searchRoot->dstIP.intIP)
+    else if(newIP.end < searchRoot->dstIP.start)
     {
         //cout<<"left"<<endl<<endl;
         //        searchRoot->left = InsertNode(rule, searchRoot->left);
@@ -216,12 +216,12 @@ RangeNode* DstTree:: InsertNode( Rule rule, RangeNode* searchRoot)
             //            cout<<"-----------ROTATE--------------"<<endl;
             //            cout<<"search left ip:"; searchRoot->left->ip.Print();
             //            cout<<"new node:"; newNode->ip.Print();
-            if(searchRoot->left->dstIP.intIP > newNode->dstIP.IPEnd)
+            if(searchRoot->left->dstIP.start > newNode->dstIP.end)
             {
                 //cout<<"single_rotate_left"<<endl;
                 searchRoot = single_rotate_left(searchRoot);
             }
-            else if(searchRoot->left->dstIP.IPEnd < newNode->dstIP.intIP)
+            else if(searchRoot->left->dstIP.end < newNode->dstIP.start)
             {
                 //cout<<"double_rotate_left"<<endl;
                 searchRoot = double_rotate_left(searchRoot);
@@ -277,18 +277,18 @@ void DstTree::Print(RangeNode *root)
     if(!root)
         return ;
     if(root){
-        cout<<"["<< root->dstIP.intIP<<","<<root->dstIP.IPEnd << "] Action: "<<root->action<<"   height:" << root->high << endl;
+        cout<<"["<< root->dstIP.start<<","<<root->dstIP.end << "] Action: "<<root->action<<"   height:" << root->high << endl;
         if(root->left != nullptr)
         {
             cout<<"left:"<<endl;
             Print(root->left);
-            cout<<"back to"<<"["<< root->dstIP.intIP<<","<<root->dstIP.IPEnd << "]"<<endl;
+            cout<<"back to"<<"["<< root->dstIP.start<<","<<root->dstIP.end << "]"<<endl;
         }
         if(root->right != nullptr)
         {
             cout<<"right:"<<endl;
             Print(root->right);
-            cout<<"back to"<<"["<< root->dstIP.intIP<<","<<root->dstIP.IPEnd << "]"<<endl;
+            cout<<"back to"<<"["<< root->dstIP.start<<","<<root->dstIP.end << "]"<<endl;
         }
     }
 }
