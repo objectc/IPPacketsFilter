@@ -19,7 +19,7 @@ IPParser::~IPParser() {
 void IPParser::parseData() {
     string ruleItem;
     ifstream dataFile;
-    dataFile.open("ruleset.txt");
+    dataFile.open("ruleset 2.txt");
     if (dataFile.is_open()) {
         while(getline(dataFile,ruleItem)) {
             istringstream ss(ruleItem);
@@ -44,7 +44,7 @@ void IPParser::verifyData(){
     ifstream dataFile;
     dataFile.open("packetfile.txt");
     ofstream resultFile;
-    resultFile.open ("result1.txt");
+    resultFile.open ("result11111a.txt");
     if (dataFile.is_open()) {
         while(getline(dataFile,testCaseItem)) {
             istringstream ss(testCaseItem);
