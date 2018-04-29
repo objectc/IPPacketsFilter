@@ -106,7 +106,7 @@ int main(int argc, const char * argv[]) {
     cout << "Hello, World!\n";
     fstream f_stream;
     string s;
-    f_stream.open("./Res/ruleset_test.txt", ios::in);
+    f_stream.open("./Res/ruleset 2.txt", ios::in);
     SrcTree tree = SrcTree();
     int loopTime = 0;
     while (!f_stream.eof()) {

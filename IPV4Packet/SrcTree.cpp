@@ -381,8 +381,6 @@ void SrcTree::InsertSubNode(RangeNode *node, RangeNode* &searchRoot){
         else{
             IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
             IPRange::Split(newIP, searchRoot->srcIP, left, mid, right);
-            //        TODO:memory leak
-            searchRoot->srcIP = *mid;
             
             if(left != nullptr)
             {
@@ -407,6 +405,9 @@ void SrcTree::InsertSubNode(RangeNode *node, RangeNode* &searchRoot){
                 }
                 InsertSubNode(rightNode, searchRoot->right);
             }
+            
+            //        TODO:memory leak
+            searchRoot->srcIP = *mid;
         }
     }
 }
