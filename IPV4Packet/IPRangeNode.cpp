@@ -7,17 +7,16 @@
 //
 
 #include "IPRangeNode.hpp"
-
+//TODO:Memory Leak
 void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
-    if (rangeSRC.start>this->end) {
+    if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC);
             this->right->dstChild = new DestNode(rangeDST, action);
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action);
-//            this->right->dstChild->InsertNode(rangeDST, action);
         }
-    }else if (rangeSRC.end<this->start){
+    }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC);
             this->left->dstChild = new DestNode(rangeDST, action);
@@ -27,9 +26,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
         IPRange::Split(rangeSRC, this->range, left, mid, right);
-        //        TODO:memory leak
         this->range = *mid;
-        this->dstChild->InsertNode(range, action);
         if(left != nullptr)
         {
             // if original contain, use original's action and dstTree
@@ -48,18 +45,19 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
                 InsertNode(*right, this->dstChild);
             }
         }
+        this->dstChild->InsertNode(rangeDST, action);
     }
 }
 
 void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
-    if (rangeSRC.start>this->end) {
+    if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC);
             this->right->dstChild = DestNode::deepcopy(dst);
         }else{
             this->right->InsertNode(rangeSRC, dst);
         }
-    }else if (rangeSRC.end<this->start){
+    }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC);
             this->left->dstChild = DestNode::deepcopy(dst);
@@ -78,7 +76,13 @@ bool SourceNode::IsPacketAllow(unsigned int packetSRC, unsigned int packetDST){
 };
 
 SourceNode* SourceNode::Search(unsigned int packetIP){
-    return nullptr;
+    if (packetIP>this->range.end) {
+        return this->right->Search(packetIP);
+    }else if (packetIP<this->range.start) {
+        return this->left->Search(packetIP);
+    }else{
+        return this;
+    }
 }
 
 
@@ -87,11 +91,24 @@ SourceNode* SourceNode::Search(unsigned int packetIP){
 // MARK:DestNode
 
 DestNode* DestNode::deepcopy(const DestNode *dstNode){
-    return nullptr;
+    DestNode *nodeCopy = new DestNode(dstNode);
+    if (dstNode->right != nullptr) {
+        nodeCopy->right = DestNode::deepcopy(dstNode->right);
+    }
+    if (dstNode->left != nullptr) {
+        nodeCopy->left = DestNode::deepcopy(dstNode->left);
+    }
+    return nodeCopy;
 }
 
 DestNode* DestNode::Search(unsigned int packetIP){
-    return nullptr;
+    if (packetIP>this->range.end) {
+        return this->right->Search(packetIP);
+    }else if (packetIP<this->range.start) {
+        return this->left->Search(packetIP);
+    }else{
+        return this;
+    }
 }
 
 void DestNode::InsertNode(const IPRange &rangeDST, bool action){

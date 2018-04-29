@@ -109,6 +109,7 @@ int main(int argc, const char * argv[]) {
     while (!f_stream.eof()) {
         //cout<<"IP info"<<endl;
         f_stream>>s;
+        
 //        Rule rule(s);
 //        cout<<"--------------------------"<<endl;
 //        cout<<"DO:-------->"<<endl;
