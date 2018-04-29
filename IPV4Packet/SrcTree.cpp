@@ -287,7 +287,6 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
         // cout<<"contain"<<endl;
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
         IPRange::Split(newIP, searchRoot->srcIP, left, mid, right);
-        searchRoot->srcIP = *mid;
         Rule midR = Rule(node->dstIP, *mid, node->action);
         
         searchRoot->childTree->root = searchRoot->childTree->InsertNode(midR, searchRoot->childTree->root);
@@ -315,6 +314,7 @@ RangeNode* SrcTree:: InsertNode( RangeNode* node , RangeNode* searchRoot)
             }
             root = InsertNode(rightNode, root);
         }
+        searchRoot->srcIP = *mid;
         return root;
         
     }
