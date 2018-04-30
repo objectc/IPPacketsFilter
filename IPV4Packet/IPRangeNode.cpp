@@ -11,15 +11,15 @@
 void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
-            this->right = new SourceNode(rangeSRC);
-            this->right->dstChild = new DestNode(rangeDST, action);
+            this->right = new SourceNode(rangeSRC, rangeDST, action);
+//            this->right->dstChild = new DestNode(rangeDST, action);
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
-            this->left = new SourceNode(rangeSRC);
-            this->left->dstChild = new DestNode(rangeDST, action);
+            this->left = new SourceNode(rangeSRC, rangeDST, action);
+//            this->left->dstChild = new DestNode(rangeDST, action);
         }else{
             this->left->InsertNode(rangeSRC, rangeDST, action);
         }
@@ -48,6 +48,12 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
         this->dstChild->InsertNode(rangeDST, action);
     }
 }
+SourceNode::SourceNode(const IPRange &rangeSRC):IPRangeNode(rangeSRC){
+    
+}
+SourceNode::SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action):IPRangeNode(rangeSRC){
+    dstChild = new DestNode(rangeDST, action);
+};
 
 void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
     if (rangeSRC.start>this->range.end) {

@@ -26,9 +26,10 @@ public:
 };
 
 class SourceNode:public IPRangeNode{
-    
+public:
     SourceNode(unsigned int start, unsigned int end):IPRangeNode(start, end){};
-    SourceNode(const IPRange& range):IPRangeNode(range){};
+    SourceNode(const IPRange &rangeSRC);
+    SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
     
     void InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
     void InsertNode(const IPRange &rangeSRC, const DestNode *dst);
@@ -38,7 +39,7 @@ class SourceNode:public IPRangeNode{
     
     SourceNode *left = nullptr;
     SourceNode *right = nullptr;
-    DestNode *dstChild;
+    DestNode *dstChild = nullptr;
 };
 class DestNode:public IPRangeNode{
 public:

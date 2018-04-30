@@ -21,11 +21,11 @@ class IPRange
 {
 public:
     // minIP <= ip < maxIP
+    static unsigned int ip_to_int (const std::string &ip);
     unsigned int start;
     unsigned int end;
-    
     IPRange(const unsigned int start, const unsigned int end);
-    IPRange(const string &ipStr, const char &cidr);
+    IPRange(const string &ruleStr);
     bool IsContain(IPRange b) const;
     static void Split(IPRange a, IPRange b, IPRange*& left, IPRange*& mid, IPRange*& right)
     {
