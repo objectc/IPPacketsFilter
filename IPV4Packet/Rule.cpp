@@ -33,6 +33,7 @@ Rule::Rule(std::string inputStr)
     else
         allow = false;
 }
+<<<<<<< HEAD
 void Rule::Print()
 {
     cout<<"SourceIP:";
@@ -40,6 +41,19 @@ void Rule::Print()
     cout<<"DestIP:";
     dst.Print();
     cout<<"Action:"<<allow<<endl<<endl;
+=======
+
+bool Rule::isContain(unsigned int const& srcPacket, unsigned int const& dstPacket){
+    unsigned int ruleSrcShift = src.cidr==32?0:src.intIP>>src.cidr;
+    unsigned int packetSrcShift = src.cidr==32?0:srcPacket>>src.cidr;
+    unsigned int ruleDstShift = dst.cidr==32?0:dst.intIP>>dst.cidr;
+    unsigned int packetDstShift = dst.cidr==32?0:dstPacket>>dst.cidr;
+//    return src.intIP>>src.cidr == srcPacket>>src.cidr && dst.intIP>>dst.cidr == dstPacket>>dst.cidr;
+    bool res = (ruleSrcShift == packetSrcShift && ruleDstShift == packetDstShift);
+//    bool res = (ruleSrcShift == packetSrcShift);
+    return res;
+    
+>>>>>>> master
 }
 
 
