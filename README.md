@@ -1,11 +1,4 @@
-# IPPacketsFilter
-IPV4 CIDR Filter
-
-1. Merge naive code
-2. Class definition
-3. Simple Build Tree
-4. Keep the tree balanced
-
+# IPV4 Packets Filter with 2d Range Tree
 
 
 A filter rule set is a set of rules of the form:
