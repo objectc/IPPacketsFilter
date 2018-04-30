@@ -10,6 +10,7 @@
 #define IPRangeNode_hpp
 
 #include <stdio.h>
+#include <stack>
 
 #include "IPRange.hpp"
 
@@ -21,6 +22,8 @@ public:
     IPRangeNode(const IPRange& range):range(range){};
     
     virtual IPRangeNode *Search(unsigned packetIP) = 0;
+    
+    static stack<IPRangeNode *>trackStack;
     
     IPRange range;
 };
