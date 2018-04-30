@@ -5,7 +5,6 @@
 //  Created by tab on 4/18/18.
 //  Copyright © 2018 tab. All rights reserved.
 //
-
 #ifndef IPParser_hpp
 #define IPParser_hpp
 

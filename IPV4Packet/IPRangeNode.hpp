@@ -26,7 +26,21 @@ public:
     static stack<IPRangeNode *>trackStack;
     
     IPRange range;
+    IPRangeNode *left = nullptr;
+    IPRangeNode *right = nullptr;
+    
+    int high;
+    static IPRangeNode *root;
+    int hight(IPRangeNode * root);
+    IPRangeNode* single_rotate_left(IPRangeNode *root);
+    IPRangeNode* single_rotate_right(IPRangeNode * root);
+    IPRangeNode* double_rotate_left(IPRangeNode * root);
+    IPRangeNode* double_rotate_right(IPRangeNode * root);
+    
+    
 };
+
+IPRangeNode* IPRangeNode::root = nullptr;
 
 class SourceNode:public IPRangeNode{
 public:
