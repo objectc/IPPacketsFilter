@@ -38,8 +38,8 @@ bool Rule::isContain(unsigned int const& srcPacket, unsigned int const& dstPacke
     unsigned int ruleDstShift = dst.cidr==32?0:dst.intIP>>dst.cidr;
     unsigned int packetDstShift = dst.cidr==32?0:dstPacket>>dst.cidr;
 //    return src.intIP>>src.cidr == srcPacket>>src.cidr && dst.intIP>>dst.cidr == dstPacket>>dst.cidr;
-//    bool res = (ruleSrcShift == packetSrcShift && ruleDstShift == packetDstShift);
-    bool res = (ruleSrcShift == packetSrcShift);
+    bool res = (ruleSrcShift == packetSrcShift && ruleDstShift == packetDstShift);
+//    bool res = (ruleSrcShift == packetSrcShift);
     return res;
     
 }
