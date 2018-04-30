@@ -12,14 +12,12 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
-//            this->right->dstChild = new DestNode(rangeDST, action);
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
-//            this->left->dstChild = new DestNode(rangeDST, action);
         }else{
             this->left->InsertNode(rangeSRC, rangeDST, action);
         }
