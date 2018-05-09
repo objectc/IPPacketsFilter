@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include "IPRange.hpp"
-
+extern bool isRedudant;
 class DestNode;
 class SourceNode;
 class IPRangeNode{
