@@ -8,16 +8,19 @@
 
 #include "IPRangeNode.hpp"
 //TODO:Memory Leak
+bool isRedudant = true;
 void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
+            isRedudant = false;
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
+            isRedudant = false;
         }else{
             this->left->InsertNode(rangeSRC, rangeDST, action);
         }
@@ -66,6 +69,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC);
             this->right->dstChild = DestNode::deepcopy(dst);
+            isRedudant = false;
         }else{
             this->right->InsertNode(rangeSRC, dst);
         }
@@ -73,6 +77,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC);
             this->left->dstChild = DestNode::deepcopy(dst);
+            isRedudant = false;
         }else{
             this->left->InsertNode(rangeSRC, dst);
         }
@@ -115,8 +120,14 @@ DestNode* DestNode::deepcopy(const DestNode *dstNode){
 
 DestNode* DestNode::Search(unsigned int packetIP){
     if (packetIP>this->range.end) {
+        if (this->right == nullptr) {
+            throw "right is null";
+        }
         return this->right->Search(packetIP);
     }else if (packetIP<this->range.start) {
+        if (this->left == nullptr) {
+            throw "left is null";
+        }
         return this->left->Search(packetIP);
     }else{
         return this;
@@ -127,12 +138,14 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
+            isRedudant = false;
         }else{
             this->right->InsertNode(rangeDST, action);
         }
     }else if (rangeDST.end<range.start){
         if (this->left == nullptr) {
             this->left = new DestNode(rangeDST, action);
+            isRedudant = false;
         }else{
             this->left->InsertNode(rangeDST, action);
         }
