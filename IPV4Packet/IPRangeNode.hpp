@@ -30,6 +30,7 @@ public:
     SourceNode(unsigned int start, unsigned int end):IPRangeNode(start, end){};
     SourceNode(const IPRange &rangeSRC);
     SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
+    ~SourceNode();
     
     void InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
     void InsertNode(const IPRange &rangeSRC, const DestNode *dst);
@@ -48,6 +49,7 @@ public:
     DestNode(const DestNode* node):IPRangeNode(node->range), isAllow(node->isAllow){};
     DestNode(const IPRange &dstRange):IPRangeNode(dstRange), isAllow(false){};
     DestNode(const IPRange &dstRange, bool action):IPRangeNode(dstRange), isAllow(action){};
+    ~DestNode();
     
     void InsertNode(const IPRange &rangeDST, bool action);
     

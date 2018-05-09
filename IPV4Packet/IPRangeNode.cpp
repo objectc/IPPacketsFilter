@@ -49,6 +49,14 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
 SourceNode::SourceNode(const IPRange &rangeSRC):IPRangeNode(rangeSRC){
     
 }
+SourceNode::~SourceNode(){
+    if(this->left != nullptr)
+        delete this->left;
+    if(this->right != nullptr)
+        delete this->right;
+    delete this->dstChild;
+}
+
 SourceNode::SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action):IPRangeNode(rangeSRC){
     dstChild = new DestNode(rangeDST, action);
 };
@@ -148,6 +156,11 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
         }
     }
 }
-
+DestNode::~DestNode(){
+    if(this->left != nullptr)
+        delete this->left;
+    if(this->right != nullptr)
+        delete this->right;
+}
 
 

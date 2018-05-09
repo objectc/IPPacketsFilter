@@ -7,7 +7,6 @@
 //
 #ifndef MAIN
 #define MAIN
-#include "Rule.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -59,8 +58,6 @@ void verifyData(SourceNode* tree){
     resultFile.close();
 }
 
-
-
 int main(int argc, const char * argv[]) {
     SourceNode * root = nullptr;
     string ruleItem;
@@ -86,7 +83,7 @@ int main(int argc, const char * argv[]) {
     }
     dataFile.close();
     verifyData(root);
-    
+    delete root;
 }
 
 #endif
