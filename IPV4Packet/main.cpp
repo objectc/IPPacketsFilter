@@ -28,7 +28,7 @@ void verifyData(SourceNode* tree){
     ifstream dataFile;
     dataFile.open("./Res/packetfile.txt");
     ofstream resultFile;
-    resultFile.open ("./Res/result_1D.txt");
+    resultFile.open ("./Res/result_rotate.txt");
     if (dataFile.is_open()) {
         while(getline(dataFile,testCaseItem)) {
             istringstream ss(testCaseItem);
@@ -79,6 +79,7 @@ int main(int argc, const char * argv[]) {
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
                 }else{
+                    SourceNode::root = root;
                     root->InsertNode(rangeSRC, rangeDST, action);
                 }
             }

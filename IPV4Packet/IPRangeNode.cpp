@@ -7,38 +7,86 @@
 //
 
 #include "IPRangeNode.hpp"
+
+IPRangeNode* IPRangeNode::root = nullptr;
+stack<IPRangeNode *> SourceNode::trackStackSrc;
+stack<IPRangeNode *> DestNode::trackStackDst;
+
+static IPRangeNode* tem = nullptr;
+
+int updateHeight(IPRangeNode *node){
+    if(!node)
+    return -1;
+    else{
+        int newLeftH = updateHeight(node->getLeft());
+        int newRightH = updateHeight(node->getRight());
+        return max(newLeftH, newRightH)+1;
+    }
+}
+
 //TODO:Memory Leak
 void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
+    DestNode::root = this->dstChild;
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
+            trackStackSrc.push(this->right);
+            root->high = updateHeight(root);
+            //rotate
+            while(trackStackSrc.size() != 0){
+                    if(hight(trackStackSrc.top()->left) - hight(trackStackSrc.top()->right) == 2){
+                        if(rangeSRC.end  < trackStackSrc.top()->left->range.start){
+                            tem = single_rotate_left(trackStackSrc.top());
+                        }
+                        else if(rangeSRC.start  < trackStackSrc.top()->left->range.end){
+                            tem = double_rotate_left(trackStackSrc.top());
+                        }
+                    }else if(hight(trackStackSrc.top()->right) - hight(trackStackSrc.top()->left) == 2){
+                        if(rangeSRC.start > trackStackSrc.top()->right->range.end){
+                            tem = single_rotate_right(trackStackSrc.top());
+                        }
+                        else if(rangeSRC.end  < trackStackSrc.top()->right->range.start){
+                            tem = double_rotate_right(trackStackSrc.top());
+                        }
+                    }
+                trackStackSrc.pop();
+            }
+            
+            root->high = updateHeight(root);
+
         }else{
+            trackStackSrc.push(this);
             this->right->InsertNode(rangeSRC, rangeDST, action);
         }
-        // rotate
-        if(hight(this->right) - hight(this->left) == 2){
-            if(rangeSRC.start > this->right->range.end){
-                root = single_rotate_right(this);
-            }
-            else{
-                root = double_rotate_right(this);
-            }
-        }
-        
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
+            trackStackSrc.push(this->left);
+            root->high = updateHeight(root);
+            //rotate
+            while(trackStackSrc.size() != 0){
+                if(hight(trackStackSrc.top()->left) - hight(trackStackSrc.top()->right) == 2){
+                    if(rangeSRC.end  < trackStackSrc.top()->left->range.start){
+                        tem = single_rotate_left(trackStackSrc.top());
+                    }
+                    else if(rangeSRC.start  < trackStackSrc.top()->left->range.end){
+                        tem = double_rotate_left(trackStackSrc.top());
+                    }
+                }else if(hight(trackStackSrc.top()->right) - hight(trackStackSrc.top()->left) == 2){
+                    if(rangeSRC.start > trackStackSrc.top()->right->range.end){
+                        tem = single_rotate_right(trackStackSrc.top());
+                    }
+                    else if(rangeSRC.end  < trackStackSrc.top()->right->range.start){
+                        tem = double_rotate_right(trackStackSrc.top());
+                    }
+                }
+                trackStackSrc.pop();
+            }
+            
+            root->high = updateHeight(root);
         }else{
+            trackStackSrc.push(this);
             this->left->InsertNode(rangeSRC, rangeDST, action);
-        }
-        // rotate
-        if(hight(this->left) - hight(this->right) == 2){
-            if(rangeSRC.start > this->left->range.end){
-                root = single_rotate_left(this);
-            }
-            else{
-                root = double_rotate_left(this);
-            }
         }
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
@@ -46,12 +94,15 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
         this->range = *mid;
         if(left != nullptr)
         {
+            
             // if original contain, use original's action and dstTree
             if (rangeSRC.IsContain(*left)) {
                 InsertNode(*left, rangeDST, action);
             }else{
                 InsertNode(*left, this->dstChild);
             }
+            
+            
         }
         if(right != nullptr)
         {
@@ -61,11 +112,12 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
             }else{
                 InsertNode(*right, this->dstChild);
             }
+            
         }
         this->dstChild->InsertNode(rangeDST, action);
     }
     //change the high of each srcNode.
-    this->high = max(hight(this->left), hight(this->right)) + 1;
+    this->dstChild = dynamic_cast<DestNode *>(DestNode::root);
 }
 SourceNode::SourceNode(const IPRange &rangeSRC):IPRangeNode(rangeSRC){
     
@@ -140,39 +192,74 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
+            trackStackDst.push(this->right);
+            root->high = updateHeight(root);
+            while (trackStackDst.size() != 0) {
+                    //rotate
+                    if(hight(trackStackDst.top()->left) - hight(trackStackDst.top()->right) == 2){
+                        if(rangeDST.end < trackStackDst.top()->left->range.start){
+                            tem = single_rotate_left(trackStackDst.top());
+                        }
+                        else if(rangeDST.start > trackStackDst.top()->left->range.end){
+                            tem = double_rotate_left(trackStackDst.top());
+                        }
+                    } else if(hight(trackStackDst.top()->right) - hight(trackStackDst.top()->left) == 2){
+                        if(rangeDST.start > trackStackDst.top()->right->range.end){
+                            tem = single_rotate_right(trackStackDst.top());
+                        }
+                        else if(rangeDST.end < trackStackDst.top()->right->range.start){
+                            tem = double_rotate_right(trackStackDst.top());
+                        }
+                    }
+                trackStackDst.pop();
+            }
+            root->high = updateHeight(root);
         }else{
             //push current node into stack
-            trackStack.push(this);
+            trackStackDst.push(this);
             this->right->InsertNode(rangeDST, action);
         }
         
-        //rotate
-        if(hight(this->right) - hight(this->left) == 2){
-            if(rangeDST.start > this->right->range.end){
-                root = single_rotate_right(this);
-            }
-            else{
-                root = double_rotate_right(this);
-            }
-        }
     }else if (rangeDST.end<range.start){
         if (this->left == nullptr) {
             this->left = new DestNode(rangeDST, action);
+            trackStackDst.push(this->left);
+            root->high = updateHeight(root);
+            while (trackStackDst.size() != 0) {
+                //rotate
+                if(hight(trackStackDst.top()->left) - hight(trackStackDst.top()->right) == 2){
+                    if(rangeDST.end < trackStackDst.top()->left->range.start){
+                        tem = single_rotate_left(trackStackDst.top());
+                    }
+                    else if(rangeDST.start > trackStackDst.top()->left->range.end){
+                        tem = double_rotate_left(trackStackDst.top());
+                    }
+                } else if(hight(trackStackDst.top()->right) - hight(trackStackDst.top()->left) == 2){
+                    if(rangeDST.start > trackStackDst.top()->right->range.end){
+                        tem = single_rotate_right(trackStackDst.top());
+                    }
+                    else if(rangeDST.end < trackStackDst.top()->right->range.start){
+                        tem = double_rotate_right(trackStackDst.top());
+                    }
+                }
+                trackStackDst.pop();
+            }
+            root->high = updateHeight(root);
         }else{
             //push current node into stack
-            trackStack.push(this);
+            trackStackDst.push(this);
             this->left->InsertNode(rangeDST, action);
         }
         
-        //rotate
-        if(hight(this->left) - hight(this->right) == 2){
-            if(rangeDST.start > this->left->range.end){
-                root = single_rotate_left(this);
-            }
-            else{
-                root = double_rotate_left(this);
-            }
-        }
+//        //rotate
+//        if(hight(this->left) - hight(this->right) == 2){
+//            if(rangeDST.end > this->left->range.start){
+//                tem = single_rotate_left(this);
+//            }
+//            else if(rangeDST.start > this->left->range.end){
+//                tem = double_rotate_left(this);
+//            }
+//        }
         
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
@@ -183,16 +270,6 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
             if (rangeDST.IsContain(*left)) {
                 InsertNode(*left, action);
             }
-            
-            //rotate
-            if(hight(trackStack.top()->left) - hight(trackStack.top()->right) == 2){
-                if(rangeDST.start > trackStack.top()->left->range.end){
-                    root = single_rotate_left(trackStack.top());
-                }
-                else{
-                    root = double_rotate_left(trackStack.top());
-                }
-            }
         }
         if(right != nullptr)
         {
@@ -201,71 +278,78 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
                 InsertNode(*right, action);
             }
             
-            //rotate
-            if(hight(trackStack.top()->right) - hight(trackStack.top()->left) == 2){
-                if(rangeDST.start > trackStack.top()->right->range.end){
-                    root = single_rotate_right(trackStack.top());
-                }
-                else{
-                    root = double_rotate_right(trackStack.top());
-                }
-            }
+//            //rotate
+//                if(hight(this->right) - hight(this->left) == 2){
+//                    if(rangeDST.start > this->right->range.end){
+//                        tem = single_rotate_right(this);
+//                    }
+//                    else if(rangeDST.end < this->right->range.start){
+//                        tem = double_rotate_right(this);
+//                    }
+//                }
         }
     }
     
-    trackStack.pop();
-    
     //chage high of each dstNode
-    this->high = max(hight(this->left), hight(this->right)) + 1;
+//    this->high = max(hight(this->left), hight(this->right)) + 1;
 }
 
 //get the high of each node
-int IPRangeNode::hight(IPRangeNode * root){
-    if(!root)
-    return -1;
+int IPRangeNode::hight(IPRangeNode * node){
+    if(!node)
+        return -1;
     else
-    return root->high;
+        return node->high;
 }
 
 //rotate left
-IPRangeNode* IPRangeNode::single_rotate_left(IPRangeNode *root){
-    IPRangeNode * tmp = root->left;
-    root->left = tmp->right;
-    tmp->right = root;
+IPRangeNode* IPRangeNode::single_rotate_left(IPRangeNode *node){
+    IPRangeNode * tmp = node->getLeft();
+    node->setLeft(tmp->getRight());
+    tmp->setRight(node);
     
     //when finished rotate, change the node's height
-    root->high = max(hight(root->left), hight(root->right)) + 1;
-    tmp->high = max(hight(tmp->left), hight(tmp->right)) + 1;
+    node->high = max(hight(node->getLeft()), hight(node->getRight())) + 1;
+    tmp->high = max(hight(tmp->getLeft()), hight(tmp->getRight())) + 1;
     //return the new tree root node.
+    if(node == root){
+        root = tmp;
+    }
     return tmp;
 }
 
 //rotate right
-IPRangeNode* IPRangeNode::single_rotate_right(IPRangeNode * root){
-    IPRangeNode * tmp = root->right;
-    root->right = tmp->left;
-    tmp->left = root;
-    root->high = max(hight(root->left), hight(root->right)) + 1;
-    tmp->high = max(hight(tmp->left), hight(tmp->right)) + 1;
+IPRangeNode* IPRangeNode::single_rotate_right(IPRangeNode * node){
+    IPRangeNode * tmp = node->getRight();
+    node->setRight(tmp->getLeft());
+    tmp->setLeft(node);
+    node->high = max(hight(node->getLeft()), hight(node->getRight())) + 1;
+    tmp->high = max(hight(tmp->getLeft()), hight(tmp->getRight())) + 1;
+    if(node == root){
+        root = tmp;
+    }
     return tmp;
-
 }
 
 //rotate right then left.
-IPRangeNode* IPRangeNode::double_rotate_left(IPRangeNode * root){
+IPRangeNode* IPRangeNode::double_rotate_left(IPRangeNode * node){
     //first rotate right child tree.
-    root->left = single_rotate_right(root->left);
+//    node->left = single_rotate_right(node->getLeft());
+    IPRangeNode * newLeft = single_rotate_right(node->getLeft());
+    node->setLeft(newLeft);
     
     //then rotate the whole tree.
-    return single_rotate_left(root);
+    return single_rotate_left(node);
 }
 
 //rotate left then right.
-IPRangeNode* IPRangeNode::double_rotate_right(IPRangeNode * root){
+IPRangeNode* IPRangeNode::double_rotate_right(IPRangeNode * node){
     //first rotate left child tree.
-    root->right = single_rotate_left(root->right);
+//    node->right = single_rotate_left(node->getRight());
+    IPRangeNode * newRight = single_rotate_left(node->getRight());
+    node->setRight(newRight);
     //then roate the whole tree.
-    return single_rotate_right(root);
+    return single_rotate_right(node);
 }
 
 
