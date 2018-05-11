@@ -76,17 +76,6 @@ IPRange::IPRange(const string &ruleStr)
     end =start | _m;
 }
 
-void IPRange::TransformIP()
-{
-    start = a * pow(256, 3) + b * pow(256, 2) + c * 256 + d;
-    //cout<<"min"<<minIP<<endl;
-    unsigned int _m = pow(2, k) - 1;
-    end =start | _m;
-    if (k==32) {
-        start = 0;
-    }else
-        start = start >> k << k;
-}
 bool IPRange::IsContain(IPRange b) const
 {
     if(end >= b.end && start <= b.start)

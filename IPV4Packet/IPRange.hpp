@@ -125,14 +125,6 @@ public:
         }
 //        cout<<endl<<"____SPLIT END____"<<endl<<endl;
     }
-    
-private:
-    int a;
-    int b;
-    int c;
-    int d;
-    int k;
-    void TransformIP();
 };
 
 
