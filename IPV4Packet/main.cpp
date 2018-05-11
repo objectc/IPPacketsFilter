@@ -64,8 +64,10 @@ SourceNode *createTree(string fileName){
     ifstream dataFile;
     dataFile.open(fileName);
     int redundantCount = 0;
+    int lines = 0;
     if (dataFile.is_open()) {
         while(getline(dataFile,ruleItem)) {
+            lines++;
             istringstream ss(ruleItem);
             string srcStr, dstStr, actionStr;
             if (getline( ss, srcStr, ',' )&&
@@ -80,6 +82,7 @@ SourceNode *createTree(string fileName){
                     root->InsertNode(rangeSRC, rangeDST, action);
                     if (isRedudant) {
                         redundantCount += 1;
+                        cout<<"lines: "<<lines<<endl;
                     }else{
                         isRedudant = true;
                     }
@@ -127,14 +130,38 @@ int isRuleSetAllRedundant(SourceNode *root, string fileName){
 }
 
 
+void equivalentCheck(SourceNode *root, string fileName){
+    string ruleItem;
+    ifstream dataFile;
+    dataFile.open(fileName);
+    if (dataFile.is_open()) {
+        while(getline(dataFile,ruleItem)) {
+            istringstream ss(ruleItem);
+            string srcStr, dstStr, actionStr;
+            if (getline( ss, srcStr, ',' )&&
+                getline( ss, dstStr, ',' )&&
+                getline( ss, actionStr)){
+                IPRange rangeSRC(srcStr);
+                IPRange rangeDST(dstStr);
+                bool action = actionStr=="ALLOW" ? true:false;
+                root->InsertNode(rangeSRC, rangeDST, action, true);
+            }
+        }
+    }
+    dataFile.close();
+    cout<<diffActions.size()<<endl;
+}
+
 
 int main(int argc, const char * argv[]) {
     string ruleSetAPath =  "./Res/RuleSetA.txt";
     string ruleSetBPath =  "./Res/RuleSetB.txt";
     SourceNode* rootA = createTree(ruleSetAPath);
     SourceNode* rootB = createTree(ruleSetBPath);
-    isRuleSetAllRedundant(rootA, ruleSetBPath);
-    isRuleSetAllRedundant(rootB, ruleSetAPath);
+//    isRuleSetAllRedundant(rootA, ruleSetBPath);
+//    isRuleSetAllRedundant(rootB, ruleSetAPath);
+//    equivalentCheck(rootA, ruleSetBPath);
+    equivalentCheck(rootB, ruleSetAPath);
 }
 
 #endif

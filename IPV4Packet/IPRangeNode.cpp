@@ -9,20 +9,24 @@
 #include "IPRangeNode.hpp"
 //TODO:Memory Leak
 bool isRedudant = true;
-void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
+vector<IPRange> srcRanges,dstRanges;
+vector<bool>diffActions;
+
+SourceNode* DestNode::curSrcNode = nullptr;
+void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action, bool isEquivalentCheck){
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
-//            isRedudant = false;
+            isRedudant = false;
         }else{
-            this->right->InsertNode(rangeSRC, rangeDST, action);
+            this->right->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
-//            isRedudant = false;
+            isRedudant = false;
         }else{
-            this->left->InsertNode(rangeSRC, rangeDST, action);
+            this->left->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
@@ -32,7 +36,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
         {
             // if original contain, use original's action and dstTree
             if (rangeSRC.IsContain(*left)) {
-                InsertNode(*left, rangeDST, action);
+                InsertNode(*left, rangeDST, action, isEquivalentCheck);
             }else{
                 InsertNode(*left, this->dstChild);
             }
@@ -41,12 +45,13 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
         {
             // if original contain, use original's action and dstTree
             if (rangeSRC.IsContain(*right)) {
-                InsertNode(*right, rangeDST, action);
+                InsertNode(*right, rangeDST, action, isEquivalentCheck);
             }else{
                 InsertNode(*right, this->dstChild);
             }
         }
-        this->dstChild->InsertNode(rangeDST, action);
+        DestNode::curSrcNode = this;
+        this->dstChild->InsertNode(rangeDST, action, isEquivalentCheck);
     }
 }
 SourceNode::SourceNode(const IPRange &rangeSRC):IPRangeNode(rangeSRC){
@@ -134,7 +139,7 @@ DestNode* DestNode::Search(unsigned int packetIP){
     }
 }
 
-void DestNode::InsertNode(const IPRange &rangeDST, bool action){
+void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalentCheck){
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
@@ -165,6 +170,15 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
             // only take new rule into consideration
             if (rangeDST.IsContain(*right)) {
                 InsertNode(*right, action);
+            }
+        }
+        //equivalent check
+        if (isEquivalentCheck && !hasChecked) {
+            if (action != this->isAllow) {
+                srcRanges.push_back(IPRange(curSrcNode->range.start, curSrcNode->range.end));
+                dstRanges.push_back(IPRange(mid->start, mid->end));
+                diffActions.push_back(action);
+                hasChecked = true;
             }
         }
     }

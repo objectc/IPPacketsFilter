@@ -13,6 +13,9 @@
 
 #include "IPRange.hpp"
 extern bool isRedudant;
+extern vector<IPRange> srcRanges,dstRanges;
+extern vector<bool>diffActions;
+
 class DestNode;
 class SourceNode;
 class IPRangeNode{
@@ -32,7 +35,16 @@ public:
     SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
     ~SourceNode();
     
-    void InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action);
+    
+    /**
+     Insert new rule from rule set
+
+     @param rangeSRC source range of the new rule
+     @param rangeDST destination range of the new rule
+     @param action allow or block
+     @param isEquivalentCheck is used for equivalent check
+     */
+    void InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action, bool isEquivalentCheck = false);
     void InsertNode(const IPRange &rangeSRC, const DestNode *dst);
     
     bool IsPacketAllow(unsigned int packetSRC, unsigned int packetDST);
@@ -46,12 +58,12 @@ class DestNode:public IPRangeNode{
 public:
     static DestNode* deepcopy(const DestNode * dstNode);
     
-    DestNode(const DestNode* node):IPRangeNode(node->range), isAllow(node->isAllow){};
-    DestNode(const IPRange &dstRange):IPRangeNode(dstRange), isAllow(false){};
+    DestNode(const DestNode* node):IPRangeNode(node->range), isAllow(node->isAllow), hasChecked(false){};
+    DestNode(const IPRange &dstRange):IPRangeNode(dstRange), isAllow(false), hasChecked(false){};
     DestNode(const IPRange &dstRange, bool action):IPRangeNode(dstRange), isAllow(action){};
     ~DestNode();
     
-    void InsertNode(const IPRange &rangeDST, bool action);
+    void InsertNode(const IPRange &rangeDST, bool action, bool isEquivalentCheck = false);
     
     DestNode *Search(unsigned int packetIP);
     
@@ -59,5 +71,8 @@ public:
     DestNode *right = nullptr;
     
     bool isAllow;
+//    flag of current dst node has been equivanlent checked
+    bool hasChecked;
+    static SourceNode* curSrcNode;
 };
 #endif /* IPRangeNode_hpp */
