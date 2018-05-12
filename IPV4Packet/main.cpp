@@ -228,21 +228,30 @@ void equivalentCheck(SourceNode *root, string fileName){
 void test(SourceNode* rootA, SourceNode* rootB){
     int errorcnt = 0;
     int diffCnt = 0;
-    for (int i=0; i<1000000; ++i) {
-        
-        char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
-        sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
-                 rand() & 0xFF, rand() & 0xFF ) ;
-        char dst [19];
-        sprintf(dst, "0.%d.%d.%d", rand() & 0xFF,
-                rand() & 0xFF, rand() & 0xFF);
-        
-        unsigned int srcIP =  IPRange::ip_to_int(src);
-        unsigned int dstIP =  IPRange::ip_to_int(dst);
-//        cout<<"srcIP "<<srcIP<<endl;
-//        dstIP = 256;
-//        srcIP = 256;
-//        dstIP = 16777216 + rand()%(20971519-16777216);
+    srand(time(0));
+    for (int i=0; i<10000000; ++i) {
+        unsigned int srcIP,dstIP;
+        bool shouldEquivalent = (rand()%2 == 1);
+        bool testAction = false;
+        int randomIndex = 0;
+        if (shouldEquivalent) {
+            randomIndex = rand()%srcRanges.size();
+            int diffSrc = (srcRanges[randomIndex].end-srcRanges[randomIndex].start);
+            srcIP = diffSrc == 0 ? srcRanges[randomIndex].start : srcRanges[randomIndex].start+rand()%diffSrc;
+            int diffDst = (dstRanges[randomIndex].end-dstRanges[randomIndex].start);
+            dstIP = diffDst == 0 ? dstRanges[randomIndex].start : dstRanges[randomIndex].start+rand()%diffDst;
+            testAction = diffActions[randomIndex];
+        }else{
+            char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
+            sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
+                     rand() & 0xFF, rand() & 0xFF ) ;
+            char dst [19];
+            sprintf(dst, "1.%d.%d.%d", rand() & 0xFF,
+                    rand() & 0xFF, rand() & 0xFF);
+    
+            srcIP =  IPRange::ip_to_int(src);
+            dstIP =  IPRange::ip_to_int(dst);
+        }
         bool resA = rootA->IsPacketAllow(srcIP, dstIP);
         bool resB = rootB->IsPacketAllow(srcIP, dstIP);
         bool isInDiff = false;
@@ -253,6 +262,9 @@ void test(SourceNode* rootA, SourceNode* rootB){
                 if (dstRange.IsContain(dstIP)){
                     isInDiff = true;
                     diffCnt++;
+                    if (resB != testAction) {
+                        cout<<"action error"<<endl;
+                    }
                     if (resB == resA){
                         cout<<"diff error"<<endl;
                         errorcnt++;
@@ -270,7 +282,7 @@ void test(SourceNode* rootA, SourceNode* rootB){
         }
         
     }
-    cout<<"diffcnt "<<diffCnt<<"errorcnt "<<errorcnt<<endl;
+    cout<<"diffcnt "<<diffCnt<<" errorcnt "<<errorcnt<<endl;
 }
 
 
