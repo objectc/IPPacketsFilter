@@ -75,7 +75,7 @@ SourceNode *createTree(string fileName){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
                 }else{
@@ -109,7 +109,7 @@ int isRuleSetAllRedundant(SourceNode *root, string fileName){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
                 }else{
@@ -143,7 +143,7 @@ void equivalentCheck(SourceNode *root, string fileName){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 root->InsertNode(rangeSRC, rangeDST, action, true);
             }
         }
@@ -155,34 +155,40 @@ void equivalentCheck(SourceNode *root, string fileName){
 void test(SourceNode* rootA, SourceNode* rootB){
     int errorcnt = 0;
     int diffCnt = 0;
-    for (int i=0; i<100000; ++i) {
-        srand(time(0));
+    for (int i=0; i<1000000; ++i) {
+        
         char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
         sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
                  rand() & 0xFF, rand() & 0xFF ) ;
         char dst [19];
-        sprintf(dst, "1.%d.%d.%d", rand() & 0xFF,
+        sprintf(dst, "0.%d.%d.%d", rand() & 0xFF,
                 rand() & 0xFF, rand() & 0xFF);
         
         unsigned int srcIP =  IPRange::ip_to_int(src);
         unsigned int dstIP =  IPRange::ip_to_int(dst);
-//        dstIP = 84281887;
+//        cout<<"srcIP "<<srcIP<<endl;
+//        dstIP = 256;
+//        srcIP = 256;
 //        dstIP = 16777216 + rand()%(20971519-16777216);
         bool resA = rootA->IsPacketAllow(srcIP, dstIP);
         bool resB = rootB->IsPacketAllow(srcIP, dstIP);
+        bool isInDiff = false;
         for (int i = 0; i<srcRanges.size(); ++i) {
             IPRange srcRange = srcRanges[i];
             if (srcRange.IsContain(srcIP)){
                 IPRange dstRange = dstRanges[i];
                 if (dstRange.IsContain(dstIP)){
+                    isInDiff = true;
                     diffCnt++;
                     if (resB == resA){
                         cout<<"diff error"<<endl;
                         errorcnt++;
-                        break;
                     }
+                    break;
                 }
             }
+        }
+        if (!isInDiff) {
             if (resB!=resA){
                 cout<<"equivalent error"<<endl;
                 errorcnt++;
@@ -196,8 +202,10 @@ void test(SourceNode* rootA, SourceNode* rootB){
 
 
 int main(int argc, const char * argv[]) {
-    string ruleSetAPath =  "./Res/RuleSetA.txt";
-    string ruleSetBPath =  "./Res/RuleSetB.txt";
+    string ruleSetAPath =  "./Res/ruleset 2.txt";
+//    string ruleSetAPath =  "./Res/A.txt";
+    string ruleSetBPath =  "./Res/RuleTestB.txt";
+//    string ruleSetBPath =  "./Res/B.txt";
     SourceNode* rootA = createTree(ruleSetAPath);
     SourceNode* rootB = createTree(ruleSetBPath);
 //    isRuleSetAllRedundant(rootA, ruleSetBPath);

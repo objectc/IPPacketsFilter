@@ -178,8 +178,8 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
                 srcRanges.push_back(IPRange(curSrcNode->range.start, curSrcNode->range.end));
                 dstRanges.push_back(IPRange(mid->start, mid->end));
                 diffActions.push_back(action);
-                hasChecked = true;
             }
+            hasChecked = true;
         }
     }
 }

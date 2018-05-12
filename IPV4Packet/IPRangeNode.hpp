@@ -60,7 +60,7 @@ public:
     
     DestNode(const DestNode* node):IPRangeNode(node->range), isAllow(node->isAllow), hasChecked(false){};
     DestNode(const IPRange &dstRange):IPRangeNode(dstRange), isAllow(false), hasChecked(false){};
-    DestNode(const IPRange &dstRange, bool action):IPRangeNode(dstRange), isAllow(action){};
+    DestNode(const IPRange &dstRange, bool action):IPRangeNode(dstRange), isAllow(action), hasChecked(false){};
     ~DestNode();
     
     void InsertNode(const IPRange &rangeDST, bool action, bool isEquivalentCheck = false);
