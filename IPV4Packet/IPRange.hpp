@@ -28,6 +28,13 @@ public:
     IPRange(const string &ruleStr);
     bool IsContain(IPRange b) const;
     bool IsContain(unsigned int ip);
+    bool operator==(const IPRange &t1) const{
+        if(t1.start != this->start)
+            return false;
+        if(t1.end != this->end)
+            return false;
+        return true;
+    }
     static void Split(IPRange a, IPRange b, IPRange*& left, IPRange*& mid, IPRange*& right)
     {
         std::vector<unsigned int> ipVec;

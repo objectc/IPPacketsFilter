@@ -30,16 +30,12 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
-//            writeToFile(rangeSRC, rangeDST, action,"./Res/b.txt");
-            isRedudant = false;
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
-//            writeToFile(rangeSRC, rangeDST, action,"./Res/b.txt");
-            isRedudant = false;
         }else{
             this->left->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
@@ -89,7 +85,6 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC);
             this->right->dstChild = DestNode::deepcopy(dst);
-//            isRedudant = false;
         }else{
             this->right->InsertNode(rangeSRC, dst);
         }
@@ -97,7 +92,6 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const DestNode *dst){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC);
             this->left->dstChild = DestNode::deepcopy(dst);
-//            isRedudant = false;
         }else{
             this->left->InsertNode(rangeSRC, dst);
         }
@@ -158,16 +152,12 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
-//            writeToFile(rangeSRC, rangeDST, action,"./Res/A.txt");
-            isRedudant = false;
         }else{
             this->right->InsertNode(rangeDST, action, isEquivalentCheck);
         }
     }else if (rangeDST.end<range.start){
         if (this->left == nullptr) {
             this->left = new DestNode(rangeDST, action);
-//            writeToFile(rangeSRC, rangeDST, action,"./Res/A.txt");
-            isRedudant = false;
         }else{
             this->left->InsertNode(rangeDST, action, isEquivalentCheck);
         }
@@ -195,8 +185,8 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
                 srcRanges.push_back(IPRange(curSrcNode->range.start, curSrcNode->range.end));
                 dstRanges.push_back(IPRange(mid->start, mid->end));
                 diffActions.push_back(action);
-                hasChecked = true;
             }
+            hasChecked = true;
         }
     }
 }

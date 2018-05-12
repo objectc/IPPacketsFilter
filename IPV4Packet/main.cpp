@@ -28,92 +28,66 @@ void writeToFile(IPRange src, IPRange dest, bool action,string fileName){
     dataFile.close();
 }
 
-void merge_result(const vector<IPRange> &src, const vector<IPRange> &dest, const vector<bool> act){
-    vector<IPRange> newSrc = src;
-    vector<IPRange> newDest = dest;
-    vector<bool> newAct = act;
-    cout<<"src size" << src.size() << "   newSrc size"<< newSrc.size()<<endl;
+void destMerge(vector<IPRange> &src, vector<IPRange> &dest, vector<bool> &act, int searchID = 0){
+    vector<IPRange>::iterator srcItrator = src.begin() + searchID;
+    vector<IPRange>::iterator destIterator = dest.begin() + searchID;
+    vector<bool>::iterator actionIterator = act.begin() + searchID;
     
-    for(int i = 0; i < newSrc.size()-1; i++){
-        IPRange obj(newDest[i].start, newDest[i].end);
-        for(int j = 1; j < newSrc.size(); j++){
-            if(newSrc[i].start == newSrc[j].start && newSrc[i].end == newSrc[j].end && newAct[i] == newAct[j]){
-                if(dest[i].start == dest[j].end+1){
-                    obj.start = dest[j].start;
-                    newAct.erase(newAct.begin()+i);
-                    newAct.erase(newAct.begin()+j);
-                    newSrc.erase(newSrc.begin()+i);
-                    newSrc.erase(newSrc.begin()+j);
-                    newDest.erase(newDest.begin()+i);
-                    newDest.erase(newDest.begin()+j);
-                    newAct.push_back(newAct[i]);
-                    newSrc.push_back(newSrc[i]);
-                    newDest.push_back(obj);
-                    i--;
-                    break;
-                    
-                }else if(dest[j].start == dest[i].end+1){
-                    obj.start = dest[i].start;
-                    newAct.erase(newAct.begin()+i);
-                    newAct.erase(newAct.begin()+j);
-                    newSrc.erase(newSrc.begin()+i);
-                    newSrc.erase(newSrc.begin()+j);
-                    newDest.erase(newDest.begin()+i);
-                    newDest.erase(newDest.begin()+j);
-                    newAct.push_back(newAct[i]);
-                    newSrc.push_back(newSrc[i]);
-                    newDest.push_back(obj);
-                    i--;
-                    break;
-                }
+    IPRange &mrgSrc = *srcItrator;
+    IPRange &mrgDest = *destIterator;
+    bool mrgAction = *actionIterator;
+    
+    if(src.size() == searchID + 1)
+        return;
+    
+    for(int i = searchID + 1; i < src.size(); i++)
+    {
+        srcItrator = src.begin() + i;
+        destIterator = dest.begin() + i;
+        actionIterator = act.begin() + i;
+        if(*srcItrator == mrgSrc && *actionIterator == mrgAction)
+        {
+            //compare if the dst ip could be merged
+            if(destIterator->start == mrgDest.end + 1)
+            {
+                mrgDest.end = destIterator->end;
+                dest.erase(destIterator);
+                src.erase(srcItrator);
+                act.erase(actionIterator);
+                //recursion
+                destMerge(src, dest, act, searchID);
+                return;
+            }
+            else if(destIterator->end + 1 == mrgDest.start)
+            {
+                mrgDest.start = destIterator->start;
+                dest.erase(destIterator);
+                src.erase(srcItrator);
+                act.erase(actionIterator);
+                //recursion
+                destMerge(src, dest, act, searchID);
+                return;
             }
         }
     }
-    vector<IPRange> realSrc = newSrc;
-    vector<IPRange> realDest = newDest;
-    vector<bool> realAct = newAct;
-    for(int i = 0; i < realSrc.size()-1; i++){
-        IPRange obj(realDest[i].start, realDest[i].end);
-        for(int j = 1; j < realSrc.size(); j++){
-            if(realDest[i].start == realDest[j].start && realDest[i].end == realDest[j].end && realAct[i] == realAct[j]){
-                if(realSrc[i].start == realSrc[j].end+1){
-                    obj.start = dest[j].start;
-                    realAct.erase(realAct.begin()+i);
-                    realAct.erase(realAct.begin()+j);
-                    realSrc.erase(realSrc.begin()+i);
-                    realSrc.erase(realSrc.begin()+j);
-                    realDest.erase(realDest.begin()+i);
-                    realDest.erase(realDest.begin()+j);
-                    realAct.push_back(realAct[i]);
-                    realDest.push_back(realDest[i]);
-                    realSrc.push_back(obj);
-                    i--;
-                    break;
-                    
-                }else if(realSrc[j].start == realSrc[i].end+1){
-                    obj.start = dest[i].start;
-                    realAct.erase(realAct.begin()+i);
-                    realAct.erase(realAct.begin()+j);
-                    realSrc.erase(realSrc.begin()+i);
-                    realSrc.erase(realSrc.begin()+j);
-                    realDest.erase(realDest.begin()+i);
-                    realDest.erase(realDest.begin()+j);
-                    realAct.push_back(realAct[i]);
-                    realDest.push_back(realDest[i]);
-                    realSrc.push_back(obj);
-                    i--;
-                    break;
-                }
-            }
-        }
-    }
-    cout<<"size :"<<realSrc.size()<<endl;
-    for(int i = 0; i < realSrc.size(); i++){
-        
-        writeToFile(realSrc[i], realDest[i], realAct[i], "./Res/a.txt");
-    }
-    
+    searchID++;
+    destMerge(src, dest, act, searchID);
 }
+
+void merge_result(vector<IPRange> &src, vector<IPRange> &dest, vector<bool> act){
+    vector<IPRange> newSrc;
+    vector<IPRange> newDest;
+    vector<bool> newAction;
+    
+    //Dest Merge
+    
+    //Src Merge
+    
+    src = newSrc;
+    dest = newDest;
+    act = newAction;
+}
+
 
 
 
@@ -153,7 +127,7 @@ void verifyData(SourceNode* tree){
     resultFile.close();
 }
 
-SourceNode *createTree(string fileName,string fileNameToWrite){
+SourceNode *createTree(string fileName){
     SourceNode * root = nullptr;
     string ruleItem;
     ifstream dataFile;
@@ -170,7 +144,7 @@ SourceNode *createTree(string fileName,string fileNameToWrite){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
 
@@ -180,7 +154,8 @@ SourceNode *createTree(string fileName,string fileNameToWrite){
                         redundantCount += 1;
                         
                     }else{
-                        cout<<"lines: "<<lines<<endl;
+                        //cout<<"lines: "<<lines<<endl;
+                        string fileNameToWrite = fileName+"output";
                          writeToFile(rangeSRC, rangeDST, action, fileNameToWrite);
                         isRedudant = true;
                     }
@@ -207,7 +182,7 @@ int isRuleSetAllRedundant(SourceNode *root, string fileName){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
                 }else{
@@ -241,7 +216,7 @@ void equivalentCheck(SourceNode *root, string fileName){
                 getline( ss, actionStr)){
                 IPRange rangeSRC(srcStr);
                 IPRange rangeDST(dstStr);
-                bool action = actionStr=="ALLOW\r" ? true:false;
+                bool action = actionStr=="ALLOW" ? true:false;
                 root->InsertNode(rangeSRC, rangeDST, action, true);
             }
         }
@@ -253,34 +228,40 @@ void equivalentCheck(SourceNode *root, string fileName){
 void test(SourceNode* rootA, SourceNode* rootB){
     int errorcnt = 0;
     int diffCnt = 0;
-    for (int i=0; i<100000; ++i) {
-        srand(time(0));
+    for (int i=0; i<1000000; ++i) {
+        
         char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
         sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
                  rand() & 0xFF, rand() & 0xFF ) ;
         char dst [19];
-        sprintf(dst, "1.%d.%d.%d", rand() & 0xFF,
+        sprintf(dst, "0.%d.%d.%d", rand() & 0xFF,
                 rand() & 0xFF, rand() & 0xFF);
         
         unsigned int srcIP =  IPRange::ip_to_int(src);
         unsigned int dstIP =  IPRange::ip_to_int(dst);
-//        dstIP = 84281887;
+//        cout<<"srcIP "<<srcIP<<endl;
+//        dstIP = 256;
+//        srcIP = 256;
 //        dstIP = 16777216 + rand()%(20971519-16777216);
         bool resA = rootA->IsPacketAllow(srcIP, dstIP);
         bool resB = rootB->IsPacketAllow(srcIP, dstIP);
+        bool isInDiff = false;
         for (int i = 0; i<srcRanges.size(); ++i) {
             IPRange srcRange = srcRanges[i];
             if (srcRange.IsContain(srcIP)){
                 IPRange dstRange = dstRanges[i];
                 if (dstRange.IsContain(dstIP)){
+                    isInDiff = true;
                     diffCnt++;
                     if (resB == resA){
                         cout<<"diff error"<<endl;
                         errorcnt++;
-                        break;
                     }
+                    break;
                 }
             }
+        }
+        if (!isInDiff) {
             if (resB!=resA){
                 cout<<"equivalent error"<<endl;
                 errorcnt++;
@@ -294,16 +275,32 @@ void test(SourceNode* rootA, SourceNode* rootB){
 
 
 int main(int argc, const char * argv[]) {
-    string ruleSetAPath =  "./Res/RuleSetA.txt";
-    string ruleSetBPath =  "./Res/RuleSetB.txt";
-    SourceNode* rootA = createTree(ruleSetAPath,"./Res/newRuleSetA.txt");
-    SourceNode* rootB = createTree(ruleSetBPath,"./Res/newRuleSetB.txt");
+//    string ruleSetAPath =  "./Res/ruleset 2.txt";
+    string ruleSetAPath =  "./Res/A.txt";
+//    string ruleSetBPath =  "./Res/RuleTestB.txt";
+    string ruleSetBPath =  "./Res/B.txt";
+    SourceNode* rootA = createTree(ruleSetAPath);
+    SourceNode* rootB = createTree(ruleSetBPath);
 //    isRuleSetAllRedundant(rootA, ruleSetBPath);
 //    isRuleSetAllRedundant(rootB, ruleSetAPath);
     equivalentCheck(rootA, ruleSetBPath);
 //    equivalentCheck(rootB, ruleSetAPath);
-    merge_result(srcRanges,dstRanges,diffActions);
-    test(rootA,rootB);
+    for(int i = 0; i < srcRanges.size(); i++)
+    {
+        cout<<"OLD("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
+    }
+    destMerge(dstRanges,srcRanges,diffActions);
+    destMerge(srcRanges,dstRanges,diffActions);
+    destMerge(dstRanges,srcRanges,diffActions);
+    destMerge(srcRanges,dstRanges,diffActions);
+    destMerge(dstRanges,srcRanges,diffActions);
+    destMerge(srcRanges,dstRanges,diffActions);
+    for(int i = 0; i < srcRanges.size(); i++)
+    {
+        cout<<"NEW("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
+    }
+    cout<<dstRanges.size();
+//    test(rootA,rootB);
 }
 
 #endif
