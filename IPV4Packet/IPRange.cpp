@@ -84,3 +84,7 @@ bool IPRange::IsContain(IPRange b) const
         return  false;
 }
 
+bool IPRange::IsContain(unsigned int ip){
+    return (ip>=start && ip<=end);
+}
+
