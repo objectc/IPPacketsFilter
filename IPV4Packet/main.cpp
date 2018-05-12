@@ -19,6 +19,101 @@
 
 using namespace std;
 
+void writeToFile(IPRange src, IPRange dest, bool action,string fileName){
+    ofstream dataFile;
+    dataFile.open(fileName,ios::app);
+    if(dataFile.is_open()){
+        dataFile<<src.start<<","<<src.end<<","<<dest.start<<","<<dest.end<<","<<action<<endl;
+    }
+    dataFile.close();
+}
+
+void merge_result(const vector<IPRange> &src, const vector<IPRange> &dest, const vector<bool> act){
+    vector<IPRange> newSrc = src;
+    vector<IPRange> newDest = dest;
+    vector<bool> newAct = act;
+    cout<<"src size" << src.size() << "   newSrc size"<< newSrc.size()<<endl;
+    
+    for(int i = 0; i < newSrc.size()-1; i++){
+        IPRange obj(newDest[i].start, newDest[i].end);
+        for(int j = 1; j < newSrc.size(); j++){
+            if(newSrc[i].start == newSrc[j].start && newSrc[i].end == newSrc[j].end && newAct[i] == newAct[j]){
+                if(dest[i].start == dest[j].end+1){
+                    obj.start = dest[j].start;
+                    newAct.erase(newAct.begin()+i);
+                    newAct.erase(newAct.begin()+j);
+                    newSrc.erase(newSrc.begin()+i);
+                    newSrc.erase(newSrc.begin()+j);
+                    newDest.erase(newDest.begin()+i);
+                    newDest.erase(newDest.begin()+j);
+                    newAct.push_back(newAct[i]);
+                    newSrc.push_back(newSrc[i]);
+                    newDest.push_back(obj);
+                    i--;
+                    break;
+                    
+                }else if(dest[j].start == dest[i].end+1){
+                    obj.start = dest[i].start;
+                    newAct.erase(newAct.begin()+i);
+                    newAct.erase(newAct.begin()+j);
+                    newSrc.erase(newSrc.begin()+i);
+                    newSrc.erase(newSrc.begin()+j);
+                    newDest.erase(newDest.begin()+i);
+                    newDest.erase(newDest.begin()+j);
+                    newAct.push_back(newAct[i]);
+                    newSrc.push_back(newSrc[i]);
+                    newDest.push_back(obj);
+                    i--;
+                    break;
+                }
+            }
+        }
+    }
+    vector<IPRange> realSrc = newSrc;
+    vector<IPRange> realDest = newDest;
+    vector<bool> realAct = newAct;
+    for(int i = 0; i < realSrc.size()-1; i++){
+        IPRange obj(realDest[i].start, realDest[i].end);
+        for(int j = 1; j < realSrc.size(); j++){
+            if(realDest[i].start == realDest[j].start && realDest[i].end == realDest[j].end && realAct[i] == realAct[j]){
+                if(realSrc[i].start == realSrc[j].end+1){
+                    obj.start = dest[j].start;
+                    realAct.erase(realAct.begin()+i);
+                    realAct.erase(realAct.begin()+j);
+                    realSrc.erase(realSrc.begin()+i);
+                    realSrc.erase(realSrc.begin()+j);
+                    realDest.erase(realDest.begin()+i);
+                    realDest.erase(realDest.begin()+j);
+                    realAct.push_back(realAct[i]);
+                    realDest.push_back(realDest[i]);
+                    realSrc.push_back(obj);
+                    i--;
+                    break;
+                    
+                }else if(realSrc[j].start == realSrc[i].end+1){
+                    obj.start = dest[i].start;
+                    realAct.erase(realAct.begin()+i);
+                    realAct.erase(realAct.begin()+j);
+                    realSrc.erase(realSrc.begin()+i);
+                    realSrc.erase(realSrc.begin()+j);
+                    realDest.erase(realDest.begin()+i);
+                    realDest.erase(realDest.begin()+j);
+                    realAct.push_back(realAct[i]);
+                    realDest.push_back(realDest[i]);
+                    realSrc.push_back(obj);
+                    i--;
+                    break;
+                }
+            }
+        }
+    }
+    cout<<"size :"<<realSrc.size()<<endl;
+    for(int i = 0; i < realSrc.size(); i++){
+        
+        writeToFile(realSrc[i], realDest[i], realAct[i], "./Res/a.txt");
+    }
+    
+}
 
 
 
@@ -58,7 +153,7 @@ void verifyData(SourceNode* tree){
     resultFile.close();
 }
 
-SourceNode *createTree(string fileName){
+SourceNode *createTree(string fileName,string fileNameToWrite){
     SourceNode * root = nullptr;
     string ruleItem;
     ifstream dataFile;
@@ -78,12 +173,15 @@ SourceNode *createTree(string fileName){
                 bool action = actionStr=="ALLOW\r" ? true:false;
                 if (root == nullptr) {
                     root = new SourceNode(rangeSRC, rangeDST, action);
+
                 }else{
                     root->InsertNode(rangeSRC, rangeDST, action);
                     if (isRedudant) {
                         redundantCount += 1;
-                        cout<<"lines: "<<lines<<endl;
+                        
                     }else{
+                        cout<<"lines: "<<lines<<endl;
+                         writeToFile(rangeSRC, rangeDST, action, fileNameToWrite);
                         isRedudant = true;
                     }
                 }
@@ -198,12 +296,13 @@ void test(SourceNode* rootA, SourceNode* rootB){
 int main(int argc, const char * argv[]) {
     string ruleSetAPath =  "./Res/RuleSetA.txt";
     string ruleSetBPath =  "./Res/RuleSetB.txt";
-    SourceNode* rootA = createTree(ruleSetAPath);
-    SourceNode* rootB = createTree(ruleSetBPath);
+    SourceNode* rootA = createTree(ruleSetAPath,"./Res/newRuleSetA.txt");
+    SourceNode* rootB = createTree(ruleSetBPath,"./Res/newRuleSetB.txt");
 //    isRuleSetAllRedundant(rootA, ruleSetBPath);
 //    isRuleSetAllRedundant(rootB, ruleSetAPath);
     equivalentCheck(rootA, ruleSetBPath);
 //    equivalentCheck(rootB, ruleSetAPath);
+    merge_result(srcRanges,dstRanges,diffActions);
     test(rootA,rootB);
 }
 

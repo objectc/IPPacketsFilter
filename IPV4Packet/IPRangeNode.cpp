@@ -7,16 +7,30 @@
 //
 
 #include "IPRangeNode.hpp"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 //TODO:Memory Leak
 bool isRedudant = true;
 vector<IPRange> srcRanges,dstRanges;
 vector<bool>diffActions;
+
+//void writeToFile(IPRange src, IPRange dest, bool action,string fileName){
+//    ofstream dataFile;
+//    dataFile.open(fileName,ios::app);
+//    if(dataFile.is_open()){
+//        dataFile<<src.start<<","<<src.end<<","<<dest.start<<","<<dest.end<<","<<action<<endl;
+//    }
+//    dataFile.close();
+//}
 
 SourceNode* DestNode::curSrcNode = nullptr;
 void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action, bool isEquivalentCheck){
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
+//            writeToFile(rangeSRC, rangeDST, action,"./Res/b.txt");
             isRedudant = false;
         }else{
             this->right->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
@@ -24,6 +38,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
             this->left = new SourceNode(rangeSRC, rangeDST, action);
+//            writeToFile(rangeSRC, rangeDST, action,"./Res/b.txt");
             isRedudant = false;
         }else{
             this->left->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
@@ -143,6 +158,7 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
+//            writeToFile(rangeSRC, rangeDST, action,"./Res/A.txt");
             isRedudant = false;
         }else{
             this->right->InsertNode(rangeDST, action, isEquivalentCheck);
@@ -150,6 +166,7 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
     }else if (rangeDST.end<range.start){
         if (this->left == nullptr) {
             this->left = new DestNode(rangeDST, action);
+//            writeToFile(rangeSRC, rangeDST, action,"./Res/A.txt");
             isRedudant = false;
         }else{
             this->left->InsertNode(rangeDST, action, isEquivalentCheck);
