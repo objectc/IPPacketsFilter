@@ -312,7 +312,7 @@ int main(int argc, const char * argv[]) {
         cout<<"NEW("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
     }
     cout<<dstRanges.size();
-//    test(rootA,rootB);
+    test(rootA,rootB);
 }
 
 #endif
