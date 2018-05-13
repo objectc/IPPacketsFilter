@@ -60,7 +60,7 @@ private:
 public:
     
     IPParser();
-    
+    IPParser(string fileName);
     
     ~IPParser();
     

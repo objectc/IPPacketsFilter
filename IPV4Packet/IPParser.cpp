@@ -11,6 +11,10 @@
     
 IPParser::IPParser() {
 }
+
+IPParser::IPParser(string fileName){
+    
+}
     
 IPParser::~IPParser() {
 }
