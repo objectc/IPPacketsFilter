@@ -15,6 +15,7 @@
 
 #include "IPRange.hpp"
 #include "IPRangeNode.hpp"
+#include "IPParser.hpp"
 #include <iomanip>
 
 
@@ -289,7 +290,70 @@ void test(SourceNode* rootA, SourceNode* rootB){
     
     cout<<"diffcnt "<<diffCnt<<" errorcnt "<<errorcnt<<endl;
 }
-
+void test(){
+    IPParser rootA("./Res/A.txt");
+    
+    IPParser rootB("./Res/B.txt");
+    int errorcnt = 0;
+    int diffCnt = 0;
+    srand(time(0));
+    for (int i=0; i<10000000; ++i) {
+        unsigned int srcIP,dstIP;
+        bool shouldEquivalent = (rand()%2 == 1);
+        bool testAction = false;
+        int randomIndex = 0;
+        if (shouldEquivalent) {
+            randomIndex = rand()%srcRanges.size()/2;
+            int diffSrc = (srcRanges[randomIndex+1]-srcRanges[randomIndex]);
+            srcIP = diffSrc == 0 ? srcRanges[randomIndex] : srcRanges[randomIndex]+rand()%diffSrc;
+            int diffDst = (dstRanges[randomIndex+1]-dstRanges[randomIndex]);
+            dstIP = diffDst == 0 ? dstRanges[randomIndex] : dstRanges[randomIndex]+rand()%diffDst;
+            testAction = diffActions[randomIndex/2];
+        }else{
+            char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
+            sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
+                     rand() & 0xFF, rand() & 0xFF ) ;
+            char dst [19];
+            sprintf(dst, "1.%d.%d.%d", rand() & 0xFF,
+                    rand() & 0xFF, rand() & 0xFF);
+            
+            srcIP =  ip_to_int(src);
+            dstIP =  ip_to_int(dst);
+        }
+        bool resA = rootA.isAllow(srcIP, dstIP); //->IsPacketAllow(srcIP, dstIP);
+        bool resB = rootB.isAllow(srcIP, dstIP);
+        bool isInDiff = false;
+        for (int i = 0; i<srcRanges.size(); i = i + 2) {
+            int srcRangeStart = srcRanges[i];
+            int srcRangeEnd = srcRanges[i+1];
+            if (srcIP<=srcRangeEnd && srcIP >= srcRangeStart){
+                int dstRangeStart = dstRanges[i];
+                int dstRangeEnd = dstRanges[i+1];
+                if (dstIP <= dstRangeEnd && dstIP >= dstRangeStart){
+                    isInDiff = true;
+                    diffCnt++;
+                    if (resB != testAction) {
+                        cout<<"action error"<<endl;
+                    }
+                    if (resB == resA){
+                        cout<<"diff error"<<endl;
+                        errorcnt++;
+                    }
+                    break;
+                }
+            }
+        }
+        if (!isInDiff) {
+            if (resB!=resA){
+                cout<<"equivalent error"<<endl;
+                errorcnt++;
+                break;
+            }
+        }
+        
+    }
+    cout<<"diffcnt "<<diffCnt<<" errorcnt "<<errorcnt<<endl;
+}
 
 int main(int argc, const char * argv[]) {
 //    string ruleSetAPath =  "./Res/ruleset 2.txt";
@@ -331,7 +395,8 @@ int main(int argc, const char * argv[]) {
         }
     }
     resultFile.close();
-    test(rootA,rootB);
+    
+//    test(rootA,rootB);
     //cout<<IPRange::int_to_ip(4294967295);
     
 }

@@ -10,16 +10,19 @@
 #include <sstream>
     
 IPParser::IPParser() {
-    parseData();
+}
+
+IPParser::IPParser(string fileName){
+    
 }
     
 IPParser::~IPParser() {
 }
     
-void IPParser::parseData() {
+void IPParser::parseData(string fileName) {
     string ruleItem;
     ifstream dataFile;
-    dataFile.open("ruleset 2.txt");
+    dataFile.open(fileName);
     if (dataFile.is_open()) {
         while(getline(dataFile,ruleItem)) {
             istringstream ss(ruleItem);
@@ -87,6 +90,20 @@ void IPParser::verifyData(){
     }
     dataFile.close();
     resultFile.close();
+}
+
+
+bool IPParser::isAllow(unsigned int srcPacketInt, unsigned int dstPacketInt){
+    for (vector<Rule>::iterator iter = ruleList.begin(); iter!=ruleList.end(); ++iter) {
+        if (iter->isContain(srcPacketInt, dstPacketInt)){
+            if (iter->isAllow(srcPacketInt, dstPacketInt)) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+    return false;
 }
 
     

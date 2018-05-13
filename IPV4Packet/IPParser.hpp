@@ -60,14 +60,17 @@ private:
 public:
     
     IPParser();
+    IPParser(string fileName);
     
     ~IPParser();
     
-    void parseData();
+    void parseData(string fileName);
     
     void verifyData();
     
     void printIP();
+    
+    bool isAllow(unsigned int srcPacketInt, unsigned int dstPacketInt);
 };
 
 
