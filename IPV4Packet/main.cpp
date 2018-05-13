@@ -229,7 +229,7 @@ void test(SourceNode* rootA, SourceNode* rootB){
     int errorcnt = 0;
     int diffCnt = 0;
     srand(time(0));
-    for (int i=0; i<10000000; ++i) {
+    for (int i=0; i<10000; ++i) {
         unsigned int srcIP,dstIP;
         bool shouldEquivalent = (rand()%2 == 1);
         bool testAction = false;
@@ -262,11 +262,12 @@ void test(SourceNode* rootA, SourceNode* rootB){
                 if (dstRange.IsContain(dstIP)){
                     isInDiff = true;
                     diffCnt++;
-                    if (resB != testAction) {
-                        cout<<"action error"<<endl;
+                    if (resB == testAction) {
+                        cout<<"action error "<<resB<<endl;
                     }
                     if (resB == resA){
-                        cout<<"diff error"<<endl;
+                        cout<<"diff error "<<resB<<endl;
+                        cout<<"randomIndex "<<randomIndex<<endl;
                         errorcnt++;
                     }
                     break;
@@ -275,13 +276,14 @@ void test(SourceNode* rootA, SourceNode* rootB){
         }
         if (!isInDiff) {
             if (resB!=resA){
-                cout<<"equivalent error"<<endl;
+                cout<<"equivalent error "<<resB<<endl;
                 errorcnt++;
-                break;
+                continue;
             }
         }
         
     }
+    
     cout<<"diffcnt "<<diffCnt<<" errorcnt "<<errorcnt<<endl;
 }
 

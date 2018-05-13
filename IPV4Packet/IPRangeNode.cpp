@@ -164,11 +164,19 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
         IPRange::Split(rangeDST, this->range, left, mid, right);
+        if (isEquivalentCheck && !hasChecked){
+            this->range = *mid;
+        }
+
+        
         if(left != nullptr)
         {
             // only take new rule into consideration
             if (rangeDST.IsContain(*left)) {
                 InsertNode(*left, action, isEquivalentCheck);
+            }else{
+                if (isEquivalentCheck&& !hasChecked)
+                    InsertNode(*left, this->isAllow, false);
             }
 
         }
@@ -177,6 +185,9 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalen
             // only take new rule into consideration
             if (rangeDST.IsContain(*right)) {
                 InsertNode(*right, action, isEquivalentCheck);
+            }else{
+                if (isEquivalentCheck && !hasChecked)
+                    InsertNode(*right, this->isAllow, false);
             }
         }
         //equivalent check
