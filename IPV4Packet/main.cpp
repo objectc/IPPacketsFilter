@@ -27,11 +27,7 @@ void verifyData(SourceNode* tree){
     ifstream dataFile;
     dataFile.open("./Res/packetfile.txt");
     ofstream resultFile;
-<<<<<<< HEAD
-    resultFile.open ("./Res/result_rotate.txt");
-=======
     resultFile.open ("./Res/result_redundant.txt");
->>>>>>> master
     if (dataFile.is_open()) {
         while(getline(dataFile,testCaseItem)) {
             istringstream ss(testCaseItem);
