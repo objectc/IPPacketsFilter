@@ -8,6 +8,18 @@
 
 #include "IPRange.hpp"
 
+string  IPRange:: int_to_ip(unsigned int intIP){
+    int a,b,c,d;
+    a = intIP / (256*256*256);
+    intIP = intIP % (256*256*256);
+    b = intIP / (256*256);
+    intIP = intIP % (256*256);
+    c = intIP / 256;
+    d = intIP % 256;
+    stringstream steam;
+    steam<<a<<"."<<b<<"."<<c<<"."<<d;
+    return steam.str();
+}
 unsigned int IPRange::ip_to_int (const std::string &ip){
     /* The return value. */
     unsigned v = 0;
