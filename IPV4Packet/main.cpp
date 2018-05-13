@@ -15,6 +15,7 @@
 
 #include "IPRange.hpp"
 #include "IPRangeNode.hpp"
+#include <iomanip>
 
 
 using namespace std;
@@ -36,8 +37,9 @@ void destMerge(vector<IPRange> &src, vector<IPRange> &dest, vector<bool> &act, i
     IPRange &mrgSrc = *srcItrator;
     IPRange &mrgDest = *destIterator;
     bool mrgAction = *actionIterator;
-    
-    if(src.size() == searchID + 1)
+
+    //cout<<"--------"<<endl<<"("<<mrgSrc.start<<","<<mrgSrc.end <<")   ("<<mrgDest.start<<","<<mrgDest.end<<")"<<endl<<"VS----------"<<endl;
+    if(src.size() <= searchID + 1)
         return;
     
     for(int i = searchID + 1; i < src.size(); i++)
@@ -71,6 +73,7 @@ void destMerge(vector<IPRange> &src, vector<IPRange> &dest, vector<bool> &act, i
         }
     }
     searchID++;
+
     destMerge(src, dest, act, searchID);
 }
 
@@ -297,22 +300,38 @@ int main(int argc, const char * argv[]) {
 //    isRuleSetAllRedundant(rootB, ruleSetAPath);
     equivalentCheck(rootA, ruleSetBPath);
 //    equivalentCheck(rootB, ruleSetAPath);
+//    for(int i = 0; i < srcRanges.size(); i++)
+//    {
+//        cout<<"OLD("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
+//    }
+//    cout<<srcRanges.size()<<endl;
+      destMerge(dstRanges,srcRanges,diffActions);
+      destMerge(srcRanges,dstRanges,diffActions);
+    ofstream resultFile;
+    resultFile.open ("./Res/equivalentResult.txt");
+    resultFile<<"Allowed by B but blocked by A:"<<endl<<endl;
     for(int i = 0; i < srcRanges.size(); i++)
     {
-        cout<<"OLD("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
+        if(diffActions[i] == false)
+        {
+            resultFile<<" Src IP from "<<setw(16)<<IPRange::int_to_ip(srcRanges[i].start)<<" to "<<setw(16)<<IPRange::int_to_ip(srcRanges[i].end)<<endl<<"Dest IP from "
+            <<setw(16)<<IPRange::int_to_ip(dstRanges[i].start)<<" to "<<setw(16)<<IPRange::int_to_ip(dstRanges[i].end)<<endl<<endl;
+        }
     }
-    destMerge(dstRanges,srcRanges,diffActions);
-    destMerge(srcRanges,dstRanges,diffActions);
-    destMerge(dstRanges,srcRanges,diffActions);
-    destMerge(srcRanges,dstRanges,diffActions);
-    destMerge(dstRanges,srcRanges,diffActions);
-    destMerge(srcRanges,dstRanges,diffActions);
+
+    resultFile<<endl<<"Allowed by B but blocked by A:"<<endl;
     for(int i = 0; i < srcRanges.size(); i++)
     {
-        cout<<"NEW("<<srcRanges[i].start<<","<<srcRanges[i].end<<"),("<<dstRanges[i].start<<","<<dstRanges[i].end<<")  "<<diffActions[i]<<endl;
+        if(diffActions[i] == true)
+        {
+            resultFile<<" Src IP from "<<setw(16)<<IPRange::int_to_ip(srcRanges[i].start)<<" to "<<setw(16)<<IPRange::int_to_ip(srcRanges[i].end)<<endl<<"Dest IP from "
+            <<setw(16)<<IPRange::int_to_ip(dstRanges[i].start)<<" to "<<setw(16)<<IPRange::int_to_ip(dstRanges[i].end)<<endl<<endl;
+        }
     }
-    cout<<dstRanges.size();
+    resultFile.close();
     test(rootA,rootB);
+    //cout<<IPRange::int_to_ip(4294967295);
+    
 }
 
 #endif

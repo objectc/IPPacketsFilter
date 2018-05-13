@@ -14,6 +14,7 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -22,6 +23,7 @@ class IPRange
 public:
     // minIP <= ip < maxIP
     static unsigned int ip_to_int (const std::string &ip);
+    static string   int_to_ip(unsigned int intIP);
     unsigned int start;
     unsigned int end;
     IPRange(const unsigned int start, const unsigned int end);
