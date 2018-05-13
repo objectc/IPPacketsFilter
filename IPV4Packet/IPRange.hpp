@@ -27,6 +27,7 @@ public:
     IPRange(const unsigned int start, const unsigned int end);
     IPRange(const string &ruleStr);
     bool IsContain(IPRange b) const;
+    bool IsContain(unsigned int ip);
     static void Split(IPRange a, IPRange b, IPRange*& left, IPRange*& mid, IPRange*& right)
     {
         std::vector<unsigned int> ipVec;
@@ -125,14 +126,6 @@ public:
         }
 //        cout<<endl<<"____SPLIT END____"<<endl<<endl;
     }
-    
-private:
-    int a;
-    int b;
-    int c;
-    int d;
-    int k;
-    void TransformIP();
 };
 
 

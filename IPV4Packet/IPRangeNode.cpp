@@ -25,11 +25,16 @@ int updateHeight(IPRangeNode *node){
 }
 
 //TODO:Memory Leak
-void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action){
-    DestNode::root = this->dstChild;
+bool isRedudant = true;
+vector<IPRange> srcRanges,dstRanges;
+vector<bool>diffActions;
+
+SourceNode* DestNode::curSrcNode = nullptr;
+void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action, bool isEquivalentCheck){
     if (rangeSRC.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new SourceNode(rangeSRC, rangeDST, action);
+            DestNode::root = this->dstChild;
             trackStackSrc.push(this->right);
             root->high = updateHeight(root);
             //rotate
@@ -55,8 +60,8 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
             root->high = updateHeight(root);
 
         }else{
-            trackStackSrc.push(this);
-            this->right->InsertNode(rangeSRC, rangeDST, action);
+
+            this->right->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
     }else if (rangeSRC.end<this->range.start){
         if (this->left == nullptr) {
@@ -86,7 +91,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
             root->high = updateHeight(root);
         }else{
             trackStackSrc.push(this);
-            this->left->InsertNode(rangeSRC, rangeDST, action);
+            this->left->InsertNode(rangeSRC, rangeDST, action, isEquivalentCheck);
         }
     }else{
         IPRange *left = nullptr, *right = nullptr, *mid = nullptr;
@@ -97,7 +102,7 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
             
             // if original contain, use original's action and dstTree
             if (rangeSRC.IsContain(*left)) {
-                InsertNode(*left, rangeDST, action);
+                InsertNode(*left, rangeDST, action, isEquivalentCheck);
             }else{
                 InsertNode(*left, this->dstChild);
             }
@@ -108,13 +113,14 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
         {
             // if original contain, use original's action and dstTree
             if (rangeSRC.IsContain(*right)) {
-                InsertNode(*right, rangeDST, action);
+                InsertNode(*right, rangeDST, action, isEquivalentCheck);
             }else{
                 InsertNode(*right, this->dstChild);
             }
             
         }
-        this->dstChild->InsertNode(rangeDST, action);
+        DestNode::curSrcNode = this;
+        this->dstChild->InsertNode(rangeDST, action, isEquivalentCheck);
     }
     //change the high of each srcNode.
     this->dstChild = dynamic_cast<DestNode *>(DestNode::root);
@@ -122,6 +128,14 @@ void SourceNode::InsertNode(const IPRange &rangeSRC, const IPRange &rangeDST, bo
 SourceNode::SourceNode(const IPRange &rangeSRC):IPRangeNode(rangeSRC){
     
 }
+SourceNode::~SourceNode(){
+    if(this->left != nullptr)
+        delete this->left;
+    if(this->right != nullptr)
+        delete this->right;
+    delete this->dstChild;
+}
+
 SourceNode::SourceNode(const IPRange &rangeSRC, const IPRange &rangeDST, bool action):IPRangeNode(rangeSRC){
     dstChild = new DestNode(rangeDST, action);
 };
@@ -180,15 +194,22 @@ DestNode* DestNode::deepcopy(const DestNode *dstNode){
 
 DestNode* DestNode::Search(unsigned int packetIP){
     if (packetIP>this->range.end) {
+        if (this->right == nullptr) {
+            throw "right is null";
+        }
         return this->right->Search(packetIP);
     }else if (packetIP<this->range.start) {
+        if (this->left == nullptr) {
+            throw "left is null";
+        }
         return this->left->Search(packetIP);
     }else{
         return this;
     }
 }
 
-void DestNode::InsertNode(const IPRange &rangeDST, bool action){
+void DestNode::InsertNode(const IPRange &rangeDST, bool action, bool isEquivalentCheck){
+    DestNode::trackStackDst.push(this);
     if (rangeDST.start>this->range.end) {
         if (this->right == nullptr) {
             this->right = new DestNode(rangeDST, action);
@@ -217,7 +238,7 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
         }else{
             //push current node into stack
             trackStackDst.push(this);
-            this->right->InsertNode(rangeDST, action);
+            this->right->InsertNode(rangeDST, action, isEquivalentCheck);
         }
         
     }else if (rangeDST.end<range.start){
@@ -248,7 +269,7 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
         }else{
             //push current node into stack
             trackStackDst.push(this);
-            this->left->InsertNode(rangeDST, action);
+            this->left->InsertNode(rangeDST, action, isEquivalentCheck);
         }
         
 //        //rotate
@@ -268,25 +289,24 @@ void DestNode::InsertNode(const IPRange &rangeDST, bool action){
         {
             // only take new rule into consideration
             if (rangeDST.IsContain(*left)) {
-                InsertNode(*left, action);
+                InsertNode(*left, action, isEquivalentCheck);
             }
         }
         if(right != nullptr)
         {
             // only take new rule into consideration
             if (rangeDST.IsContain(*right)) {
-                InsertNode(*right, action);
+                InsertNode(*right, action, isEquivalentCheck);
             }
-            
-//            //rotate
-//                if(hight(this->right) - hight(this->left) == 2){
-//                    if(rangeDST.start > this->right->range.end){
-//                        tem = single_rotate_right(this);
-//                    }
-//                    else if(rangeDST.end < this->right->range.start){
-//                        tem = double_rotate_right(this);
-//                    }
-//                }
+        }
+        //equivalent check
+        if (isEquivalentCheck && !hasChecked) {
+            if (action != this->isAllow) {
+                srcRanges.push_back(IPRange(curSrcNode->range.start, curSrcNode->range.end));
+                dstRanges.push_back(IPRange(mid->start, mid->end));
+                diffActions.push_back(action);
+            }
+            hasChecked = true;
         }
     }
     
@@ -350,6 +370,12 @@ IPRangeNode* IPRangeNode::double_rotate_right(IPRangeNode * node){
     node->setRight(newRight);
     //then roate the whole tree.
     return single_rotate_right(node);
+}
+DestNode::~DestNode(){
+    if(this->left != nullptr)
+        delete this->left;
+    if(this->right != nullptr)
+        delete this->right;
 }
 
 
