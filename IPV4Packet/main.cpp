@@ -266,7 +266,7 @@ void test(SourceNode* rootA, SourceNode* rootB){
                 if (dstRange.IsContain(dstIP)){
                     isInDiff = true;
                     diffCnt++;
-                    if (resB == testAction) {
+                    if (resB != testAction) {
                         cout<<"action error "<<resB<<endl;
                     }
                     if (resB == resA){
@@ -297,18 +297,18 @@ void test(){
     int errorcnt = 0;
     int diffCnt = 0;
     srand(time(0));
-    for (int i=0; i<10000000; ++i) {
+    for (int i=0; i<100000; ++i) {
         unsigned int srcIP,dstIP;
         bool shouldEquivalent = (rand()%2 == 1);
         bool testAction = false;
         int randomIndex = 0;
         if (shouldEquivalent) {
-            randomIndex = rand()%srcRanges.size()/2;
-            int diffSrc = (srcRanges[randomIndex+1]-srcRanges[randomIndex]);
-            srcIP = diffSrc == 0 ? srcRanges[randomIndex] : srcRanges[randomIndex]+rand()%diffSrc;
-            int diffDst = (dstRanges[randomIndex+1]-dstRanges[randomIndex]);
-            dstIP = diffDst == 0 ? dstRanges[randomIndex] : dstRanges[randomIndex]+rand()%diffDst;
-            testAction = diffActions[randomIndex/2];
+            randomIndex = rand()%srcRanges.size();
+            int diffSrc = (srcRanges[randomIndex].end-srcRanges[randomIndex].start);
+            srcIP = diffSrc == 0 ? srcRanges[randomIndex].start : srcRanges[randomIndex].start+rand()%diffSrc;
+            int diffDst = (dstRanges[randomIndex].end-dstRanges[randomIndex].start);
+            dstIP = diffDst == 0 ? dstRanges[randomIndex].start : dstRanges[randomIndex].start+rand()%diffDst;
+            testAction = diffActions[randomIndex];
         }else{
             char src [ 19 ] ;  // Longest possible IP address is 20 bytes)
             sprintf ( src, "%d.%d.%d.%d", rand() & 0xFF, rand() & 0xFF,
@@ -323,27 +323,28 @@ void test(){
         bool resA = rootA.isAllow(srcIP, dstIP); //->IsPacketAllow(srcIP, dstIP);
         bool resB = rootB.isAllow(srcIP, dstIP);
         bool isInDiff = false;
-        for (int i = 0; i<srcRanges.size(); i = i + 2) {
-            int srcRangeStart = srcRanges[i];
-            int srcRangeEnd = srcRanges[i+1];
-            if (srcIP<=srcRangeEnd && srcIP >= srcRangeStart){
-                int dstRangeStart = dstRanges[i];
-                int dstRangeEnd = dstRanges[i+1];
-                if (dstIP <= dstRangeEnd && dstIP >= dstRangeStart){
+//        for (int i = 0; i<srcRanges.size(); ++i) {
+//            IPRange srcRange = srcRanges[i];
+//            if (srcRange.IsContain(srcIP)){
+//                IPRange dstRange = dstRanges[i];
+//                if (dstRange.IsContain(dstIP)){
+        if (shouldEquivalent){
                     isInDiff = true;
                     diffCnt++;
                     if (resB != testAction) {
-                        cout<<"action error"<<endl;
+                        cout<<"action error "<<resB<<endl;
                     }
                     if (resB == resA){
-                        cout<<"diff error"<<endl;
+                        cout<<"diff error "<<resB<<endl;
+                        cout<<"randomIndex "<<randomIndex<<endl;
                         errorcnt++;
                     }
-                    break;
+//                    break;
                 }
-            }
-        }
-        if (!isInDiff) {
+        else{
+//            }
+//        }
+//        if (!isInDiff) {
             if (resB!=resA){
                 cout<<"equivalent error"<<endl;
                 errorcnt++;
@@ -395,7 +396,7 @@ int main(int argc, const char * argv[]) {
         }
     }
     resultFile.close();
-    
+    test();
 //    test(rootA,rootB);
     //cout<<IPRange::int_to_ip(4294967295);
     

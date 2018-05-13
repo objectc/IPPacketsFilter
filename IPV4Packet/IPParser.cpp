@@ -13,7 +13,7 @@ IPParser::IPParser() {
 }
 
 IPParser::IPParser(string fileName){
-    
+    parseData(fileName);
 }
     
 IPParser::~IPParser() {
@@ -94,15 +94,25 @@ void IPParser::verifyData(){
 
 
 bool IPParser::isAllow(unsigned int srcPacketInt, unsigned int dstPacketInt){
+    bool founded = false;
     for (vector<Rule>::iterator iter = ruleList.begin(); iter!=ruleList.end(); ++iter) {
         if (iter->isContain(srcPacketInt, dstPacketInt)){
             if (iter->isAllow(srcPacketInt, dstPacketInt)) {
+                //                            cout<<"src"<<iter->src.intIP<<endl;
+                //                            cout<<iter->src.cidr;
+                founded = true;
                 return true;
+//                break;
             }else{
+                //                            not allow
+//                break;
                 return false;
             }
         }
     }
+//    if (!founded) {
+//        return false;
+//    }
     return false;
 }
 
